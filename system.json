@@ -1,9 +1,9 @@
 {
   "id": "worldbuilding",
   "version": "0.8.2",
-  "title": "Simple World-Building",
-  "url": "https://github.com/foundryvtt/worldbuilding/",
-  "description": "A minimalist game system which provides configurable Actor and Item templates to support free-form system agnostic game-play.",
+  "title": "Paranormal Inc",
+  "url": "https://github.com/cortonemo/paranormal_inc/",
+  "description": "A minimalist game system which provides configurable Actor and Item templates to support Paranormal_Inc system game-play.",
   "license": "LICENSE.txt",
   "authors": [
     {
