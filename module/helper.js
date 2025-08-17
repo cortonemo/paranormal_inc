@@ -107,7 +107,7 @@ export class EntitySheetHelper {
         let groups = document.querySelectorAll('.group-key');
         for ( let i = 0; i < groups.length; i++ ) {
           if (groups[i].value === val) {
-            ui.notifications.error(game.i18n.localize("SIMPLE.NotifyAttrDuplicate") + ` (${val})`);
+            ui.notifications.error(game.i18n.localize("PIN.NotifyAttrDuplicate") + ` (${val})`);
             el.value = oldVal;
             attrError = true;
             break;
@@ -172,7 +172,7 @@ export class EntitySheetHelper {
     const button = event.currentTarget;
     const label = button.closest(".attribute").querySelector(".attribute-label")?.value;
     const chatLabel = label ?? button.parentElement.querySelector(".attribute-key").value;
-    const shorthand = game.settings.get("worldbuilding", "macroShorthand");
+    const shorthand = game.settings.get("paranormal_inc", "macroShorthand");
 
     // Use the actor for rollData so that formulas are always in reference to the parent actor.
     const rollData = this.actor.getRollData();
@@ -233,25 +233,25 @@ export class EntitySheetHelper {
 
     // Check for duplicate group keys.
     if ( groups.includes(groupName) ) {
-      ui.notifications.error(game.i18n.localize("SIMPLE.NotifyGroupDuplicate") + ` (${groupName})`);
+      ui.notifications.error(game.i18n.localize("PIN.NotifyGroupDuplicate") + ` (${groupName})`);
       return false;
     }
 
     // Check for group keys that match attribute keys.
     if ( attributes.includes(groupName) ) {
-      ui.notifications.error(game.i18n.localize("SIMPLE.NotifyGroupAttrDuplicate") + ` (${groupName})`);
+      ui.notifications.error(game.i18n.localize("PIN.NotifyGroupAttrDuplicate") + ` (${groupName})`);
       return false;
     }
 
     // Check for reserved group names.
     if ( ["attr", "attributes"].includes(groupName) ) {
-      ui.notifications.error(game.i18n.format("SIMPLE.NotifyGroupReserved", {key: groupName}));
+      ui.notifications.error(game.i18n.format("PIN.NotifyGroupReserved", {key: groupName}));
       return false;
     }
 
     // Check for whitespace or periods.
     if ( groupName.match(/[\s|\.]/i) ) {
-      ui.notifications.error(game.i18n.localize("SIMPLE.NotifyGroupAlphanumeric"));
+      ui.notifications.error(game.i18n.localize("PIN.NotifyGroupAlphanumeric"));
       return false;
     }
     return true;
@@ -387,8 +387,8 @@ export class EntitySheetHelper {
     let group = $(groupHeader).find('.group-key');
     // Create a dialog to confirm group deletion.
     new Dialog({
-      title: game.i18n.localize("SIMPLE.DeleteGroup"),
-      content: `${game.i18n.localize("SIMPLE.DeleteGroupContent")} <strong>${group.val()}</strong>`,
+      title: game.i18n.localize("PIN.DeleteGroup"),
+      content: `${game.i18n.localize("PIN.DeleteGroupContent")} <strong>${group.val()}</strong>`,
       buttons: {
         confirm: {
           icon: '<i class="fas fa-trash"></i>',
@@ -520,10 +520,10 @@ export class EntitySheetHelper {
 
     // Identify the template Actor types
     const collection = game.collections.get(this.documentName);
-    const templates = collection.filter(a => a.getFlag("worldbuilding", "isTemplate"));
+    const templates = collection.filter(a => a.getFlag("paranormal_inc", "isTemplate"));
     const defaultType = this.TYPES.filter(t => t !== CONST.BASE_DOCUMENT_TYPE)[0] ?? CONST.BASE_DOCUMENT_TYPE;
     const types = {
-      [defaultType]: game.i18n.localize("SIMPLE.NoTemplate")
+      [defaultType]: game.i18n.localize("PIN.NoTemplate")
     }
     for ( let a of templates ) {
       types[a.id] = a.name;
@@ -558,7 +558,7 @@ export class EntitySheetHelper {
         if ( template ) {
           createData = foundry.utils.mergeObject(template.toObject(), createData);
           createData.type = template.type;
-          delete createData.flags.worldbuilding.isTemplate;
+          delete createData.flags.paranormal_inc.isTemplate;
         }
 
         // Merge provided override data
@@ -596,7 +596,7 @@ export class EntitySheetHelper {
    */
   static cleanKey(key) {
     const clean = key.replace(/[\s.]/g, "");
-    if ( clean !== key ) ui.notifications.error("SIMPLE.NotifyAttrInvalid", { localize: true });
+    if ( clean !== key ) ui.notifications.error("PIN.NotifyAttrInvalid", { localize: true });
     return clean;
   }
 }

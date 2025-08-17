@@ -4,7 +4,7 @@ import { EntitySheetHelper } from "./helper.js";
  * Extend the base Actor document to support attributes and groups with a custom template creation dialog.
  * @extends {Actor}
  */
-export class SimpleActor extends Actor {
+export class PinActor extends Actor {
 
   /** @inheritdoc */
   prepareDerivedData() {
@@ -28,7 +28,7 @@ export class SimpleActor extends Actor {
    * @type {boolean}
    */
   get isTemplate() {
-    return !!this.getFlag("worldbuilding", "isTemplate");
+    return !!this.getFlag("paranormal_inc", "isTemplate");
   }
 
   /* -------------------------------------------- */
@@ -40,7 +40,7 @@ export class SimpleActor extends Actor {
 
     // Copy the actor's system data
     const data = this.toObject(false).system;
-    const shorthand = game.settings.get("worldbuilding", "macroShorthand");
+    const shorthand = game.settings.get("paranormal_inc", "macroShorthand");
     const formulaAttributes = [];
     const itemAttributes = [];
 

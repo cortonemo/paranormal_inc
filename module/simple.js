@@ -4,13 +4,13 @@
  */
 
 // Import Modules
-import { SimpleActor } from "./actor.js";
-import { SimpleItem } from "./item.js";
-import { SimpleItemSheet } from "./item-sheet.js";
-import { SimpleActorSheet } from "./actor-sheet.js";
+import { PinActor } from "./actor.js";
+import { PinItem } from "./item.js";
+import { PinItemSheet } from "./item-sheet.js";
+import { PinActorSheet } from "./actor-sheet.js";
 import { preloadHandlebarsTemplates } from "./templates.js";
-import { createWorldbuildingMacro } from "./macro.js";
-import { SimpleToken, SimpleTokenDocument } from "./token.js";
+import { createParanormalMacro } from "./macro.js";
+import { PinToken, PinTokenDocument } from "./token.js";
 
 /* -------------------------------------------- */
 /*  Foundry VTT Initialization                  */
@@ -20,7 +20,7 @@ import { SimpleToken, SimpleTokenDocument } from "./token.js";
  * Init hook.
  */
 Hooks.once("init", async function() {
-  console.log(`Initializing Simple Worldbuilding System`);
+  console.log(`Initializing Paranormal Inc`);
 
   /**
    * Set an initiative formula for the system. This will be updated later.
@@ -31,27 +31,27 @@ Hooks.once("init", async function() {
     decimals: 2
   };
 
-  game.worldbuilding = {
-    SimpleActor,
-    createWorldbuildingMacro
+  game.paranormal_inc = {
+    PinActor,
+    createParanormalMacro
   };
 
   // Define custom Document classes
-  CONFIG.Actor.documentClass = SimpleActor;
-  CONFIG.Item.documentClass = SimpleItem;
-  CONFIG.Token.documentClass = SimpleTokenDocument;
-  CONFIG.Token.objectClass = SimpleToken;
+  CONFIG.Actor.documentClass = PinActor;
+  CONFIG.Item.documentClass = PinItem;
+  CONFIG.Token.documentClass = PinTokenDocument;
+  CONFIG.Token.objectClass = PinToken;
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("worldbuilding", SimpleActorSheet, { makeDefault: true });
+  Actors.registerSheet("paranormal_inc", PinActorSheet, { makeDefault: true });
   Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("worldbuilding", SimpleItemSheet, { makeDefault: true });
+  Items.registerSheet("paranormal_inc", PinItemSheet, { makeDefault: true });
 
   // Register system settings
-  game.settings.register("worldbuilding", "macroShorthand", {
-    name: "SETTINGS.SimpleMacroShorthandN",
-    hint: "SETTINGS.SimpleMacroShorthandL",
+  game.settings.register("paranormal_inc", "macroShorthand", {
+    name: "PIN.Settings.MacroShorthand.Name",
+    hint: "PIN.Settings.MacroShorthand.Hint",
     scope: "world",
     type: Boolean,
     default: true,
@@ -59,29 +59,29 @@ Hooks.once("init", async function() {
   });
 
   // Register initiative setting.
-  game.settings.register("worldbuilding", "initFormula", {
-    name: "SETTINGS.SimpleInitFormulaN",
-    hint: "SETTINGS.SimpleInitFormulaL",
+  game.settings.register("paranormal_inc", "initFormula", {
+    name: "PIN.Settings.InitiativeFormula.Name",
+    hint: "PIN.Settings.InitiativeFormula.Hint",
     scope: "world",
     type: String,
     default: "1d20",
     config: true,
-    onChange: formula => _simpleUpdateInit(formula, true)
+    onChange: formula => _pinUpdateInit(formula, true)
   });
 
   // Retrieve and assign the initiative formula setting.
-  const initFormula = game.settings.get("worldbuilding", "initFormula");
-  _simpleUpdateInit(initFormula);
+  const initFormula = game.settings.get("paranormal_inc", "initFormula");
+  _pinUpdateInit(initFormula);
 
   /**
    * Update the initiative formula.
    * @param {string} formula - Dice formula to evaluate.
    * @param {boolean} notify - Whether or not to post nofications.
    */
-  function _simpleUpdateInit(formula, notify = false) {
+  function _pinUpdateInit(formula, notify = false) {
     const isValid = Roll.validate(formula);
     if ( !isValid ) {
-      if ( notify ) ui.notifications.error(`${game.i18n.localize("SIMPLE.NotifyInitFormulaInvalid")}: ${formula}`);
+      if ( notify ) ui.notifications.error(`${game.i18n.localize("PIN.NotifyInitFormulaInvalid")}: ${formula}`);
       return;
     }
     CONFIG.Combat.initiative.formula = formula;
@@ -101,7 +101,7 @@ Hooks.once("init", async function() {
 /**
  * Macrobar hook.
  */
-Hooks.on("hotbarDrop", (bar, data, slot) => createWorldbuildingMacro(data, slot));
+Hooks.on("hotbarDrop", (bar, data, slot) => createParanormalMacro(data, slot));
 
 /**
  * Adds the actor template context menu.
@@ -110,7 +110,7 @@ Hooks.on("getActorDirectoryEntryContext", (html, options) => {
 
   // Define an actor as a template.
   options.push({
-    name: game.i18n.localize("SIMPLE.DefineTemplate"),
+    name: game.i18n.localize("PIN.DefineTemplate"),
     icon: '<i class="fas fa-stamp"></i>',
     condition: li => {
       const actor = game.actors.get(li.data("documentId"));
@@ -118,13 +118,13 @@ Hooks.on("getActorDirectoryEntryContext", (html, options) => {
     },
     callback: li => {
       const actor = game.actors.get(li.data("documentId"));
-      actor.setFlag("worldbuilding", "isTemplate", true);
+      actor.setFlag("paranormal_inc", "isTemplate", true);
     }
   });
 
   // Undefine an actor as a template.
   options.push({
-    name: game.i18n.localize("SIMPLE.UnsetTemplate"),
+    name: game.i18n.localize("PIN.UnsetTemplate"),
     icon: '<i class="fas fa-times"></i>',
     condition: li => {
       const actor = game.actors.get(li.data("documentId"));
@@ -132,7 +132,7 @@ Hooks.on("getActorDirectoryEntryContext", (html, options) => {
     },
     callback: li => {
       const actor = game.actors.get(li.data("documentId"));
-      actor.setFlag("worldbuilding", "isTemplate", false);
+      actor.setFlag("paranormal_inc", "isTemplate", false);
     }
   });
 });
@@ -144,7 +144,7 @@ Hooks.on("getItemDirectoryEntryContext", (html, options) => {
 
   // Define an item as a template.
   options.push({
-    name: game.i18n.localize("SIMPLE.DefineTemplate"),
+    name: game.i18n.localize("PIN.DefineTemplate"),
     icon: '<i class="fas fa-stamp"></i>',
     condition: li => {
       const item = game.items.get(li.data("documentId"));
@@ -152,13 +152,13 @@ Hooks.on("getItemDirectoryEntryContext", (html, options) => {
     },
     callback: li => {
       const item = game.items.get(li.data("documentId"));
-      item.setFlag("worldbuilding", "isTemplate", true);
+      item.setFlag("paranormal_inc", "isTemplate", true);
     }
   });
 
   // Undefine an item as a template.
   options.push({
-    name: game.i18n.localize("SIMPLE.UnsetTemplate"),
+    name: game.i18n.localize("PIN.UnsetTemplate"),
     icon: '<i class="fas fa-times"></i>',
     condition: li => {
       const item = game.items.get(li.data("documentId"));
@@ -166,7 +166,7 @@ Hooks.on("getItemDirectoryEntryContext", (html, options) => {
     },
     callback: li => {
       const item = game.items.get(li.data("documentId"));
-      item.setFlag("worldbuilding", "isTemplate", false);
+      item.setFlag("paranormal_inc", "isTemplate", false);
     }
   });
 });
