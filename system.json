@@ -22,8 +22,8 @@
     },
     {
       "lang": "pl",
-      "name": "Polski",
-      "path": "lang/pl.json"
+      "name": "Português",
+      "path": "lang/pt.json"
     }
   ],
   "compatibility": {
