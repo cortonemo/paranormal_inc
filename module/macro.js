@@ -1,1 +1,1 @@
-// module/macro.js
+// macro placeholder

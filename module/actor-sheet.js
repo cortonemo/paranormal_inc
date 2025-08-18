@@ -1,13 +1,11 @@
-// module/actor-sheet.js
 export class PINActorSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["paranormal-inc", "sheet", "actor"],
       template: "systems/paranormal_inc/templates/actor-sheet.html",
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }]
+      tabs: [{navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook"}]
     });
   }
-
   async getData(options) {
     const data = await super.getData(options);
     const sys = this.actor.system ?? {};
@@ -21,15 +19,12 @@ export class PINActorSheet extends ActorSheet {
     data.cssClass = `${data.cssClass ?? ""} arche-${sys.archetype}`;
     return data;
   }
-
   activateListeners(html) {
     super.activateListeners(html);
-
     html.find('[name="system.archetype"]').on("change", async ev => {
       await this.actor.update({"system.archetype": ev.currentTarget.value});
       this.render(false);
     });
-
     html.on("change", ".pin-move-toggle", async ev => {
       const key = ev.currentTarget.dataset.move;
       const selected = new Set(this.actor.system.moves?.selected ?? []);
@@ -41,12 +36,9 @@ export class PINActorSheet extends ActorSheet {
           return;
         }
         selected.add(key);
-      } else {
-        selected.delete(key);
-      }
+      } else selected.delete(key);
       await this.actor.update({"system.moves.selected": Array.from(selected)});
     });
-
     html.on("change", ".pin-haunting", async ev => {
       const key = ev.currentTarget.dataset.key;
       await this.actor.update({[`system.hauntings.${key}`]: ev.currentTarget.checked});

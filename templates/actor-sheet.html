@@ -2,62 +2,40 @@
   <header class="sheet-header">
     <div class="header-fields">
       <div class="grid two">
-        <div>
-          <label data-i18n="PIN.Name">Name</label>
-          <input type="text" name="name" value="{{actor.name}}" placeholder="Name"/>
-        </div>
-        <div>
-          <label data-i18n="PIN.Pronouns">Pronouns</label>
-          <input type="text" name="system.pronouns" value="{{system.pronouns}}" placeholder="they/them"/>
-        </div>
+        <div><label data-i18n="PIN.Name">Name</label><input type="text" name="name" value="{{actor.name}}" placeholder="Name"/></div>
+        <div><label data-i18n="PIN.Pronouns">Pronouns</label><input type="text" name="system.pronouns" value="{{system.pronouns}}" placeholder="they/them"/></div>
       </div>
-
       <div class="grid five stats">
-        <div><label data-i18n="PIN.Science">Science</label>  <input type="number" name="system.stats.science"   value="{{system.stats.science}}"></div>
-        <div><label data-i18n="PIN.Wits">Wits</label>        <input type="number" name="system.stats.wits"      value="{{system.stats.wits}}"></div>
-        <div><label data-i18n="PIN.Vigour">Vigour</label>    <input type="number" name="system.stats.vigour"    value="{{system.stats.vigour}}"></div>
+        <div><label data-i18n="PIN.Science">Science</label><input type="number" name="system.stats.science" value="{{system.stats.science}}"></div>
+        <div><label data-i18n="PIN.Wits">Wits</label><input type="number" name="system.stats.wits" value="{{system.stats.wits}}"></div>
+        <div><label data-i18n="PIN.Vigour">Vigour</label><input type="number" name="system.stats.vigour" value="{{system.stats.vigour}}"></div>
         <div><label data-i18n="PIN.Intuition">Intuition</label><input type="number" name="system.stats.intuition" value="{{system.stats.intuition}}"></div>
-        <div>
-          <label data-i18n="PIN.Archetype">Archetype</label>
+        <div><label data-i18n="PIN.Archetype">Archetype</label>
           <select name="system.archetype">
-            {{#each config.archetypes as |arch key|}}
-              <option value="{{key}}" {{#if (eq ../system.archetype key)}}selected{{/if}}>{{arch.label}}</option>
-            {{/each}}
+            {{#each config.archetypes as |arch key|}}<option value="{{key}}" {{#if (eq ../system.archetype key)}}selected{{/if}}>{{arch.label}}</option>{{/each}}
           </select>
         </div>
       </div>
     </div>
   </header>
-
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="playbook" data-i18n="PIN.Playbook">Playbook</a>
     <a class="item" data-tab="moves" data-i18n="PIN.Moves">Moves</a>
     <a class="item" data-tab="notes" data-i18n="PIN.Notes">Notes</a>
   </nav>
-
   <section class="sheet-body">
-    <div class="tab" data-group="primary" data-tab="playbook">
-      {{> (lookup (lookup config.archetypes system.archetype) "partial") }}
-    </div>
-
+    <div class="tab" data-group="primary" data-tab="playbook">{{> (lookup (lookup config.archetypes system.archetype) "partial") }}</div>
     <div class="tab" data-group="primary" data-tab="moves">
       <p><em data-i18n="PIN.ChooseTwo">Choose 2 of the following options:</em></p>
       <ol class="move-options">
         {{#each arch.moves as |opt|}}
           <li class="flexcol">
-            <label class="flexrow">
-              <input type="checkbox" class="pin-move-toggle" data-move="{{opt.key}}"
-                     {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}>
-              <strong>{{opt.name}}</strong>
-            </label>
+            <label class="flexrow"><input type="checkbox" class="pin-move-toggle" data-move="{{opt.key}}" {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}><strong>{{opt.name}}</strong></label>
             <div class="move-text">{{opt.text}}</div>
           </li>
         {{/each}}
       </ol>
     </div>
-
-    <div class="tab" data-group="primary" data-tab="notes">
-      {{editor system.biography target="system.biography" button=true editable=editable engine="prosemirror"}}
-    </div>
+    <div class="tab" data-group="primary" data-tab="notes">{{editor system.biography target="system.biography" button=true editable=editable engine="prosemirror"}}</div>
   </section>
 </form>

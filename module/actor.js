@@ -1,2 +1,1 @@
-// module/actor.js
-export class PINActor extends Actor {}
+export class PINActor extends Actor{}

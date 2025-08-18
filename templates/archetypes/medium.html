@@ -1,1 +1,22 @@
-<section><h2>The Medium</h2><p>Placeholder.</p></section>
+<section class="grid two archetype medium">
+  <div>
+    <h2>The Medium</h2>
+    <p class="tagline">Senses Things</p>
+    <div class="vibe"><label>Vibe</label>
+      <input type="text" name="system.vibe" value="{system.vibe}" placeholder="flighty, grounded, mysterious…">
+      <small>Suggestions: {arch.vibeSuggestions}</small>
+    </div>
+    <div class="backpack"><label>Backpack</label><textarea name="system.backpack" rows="6" placeholder="One item per line">{system.backpack}</textarea></div>
+    <div class="conditions"><label>Conditions</label><textarea name="system.conditions" rows="4" placeholder="List conditions">{system.conditions}</textarea></div>
+  </div>
+  <div>
+    <h3>Personal Hauntings</h3>
+    <p>Mark in any order, then follow the instruction.</p>
+    <ul class="hauntings">
+      {#each arch.hauntings as |h|}
+        <li><label><input type="checkbox" class="pin-haunting" data-key="{h.key}" {#if (eq (lookup ../system.hauntings h.key) true)}checked{/if}><strong>{h.name}</strong></label>
+        <div class="hint">{h.text}</div></li>
+      {/each}
+    </ul>
+  </div>
+</section>

@@ -1,7 +1,1 @@
-.paranormal-inc.sheet.actor .grid { display:grid; gap:.5rem; }
-.paranormal-inc.sheet.actor .grid.two { grid-template-columns: 1fr 1fr; }
-.paranormal-inc.sheet.actor .grid.five { grid-template-columns: repeat(5, minmax(0,1fr)); }
-.paranormal-inc.sheet.actor .stats input { text-align:center; }
-.paranormal-inc.sheet.actor .playbook-art img { max-width:100%; border:1px solid #444; }
-.paranormal-inc.sheet.actor .hauntings { list-style:none; padding:0; margin:0; }
-.paranormal-inc.sheet.actor .hauntings li { margin-bottom:.5rem; }
+.paranormal-inc.sheet.actor .grid{display:grid;gap:.5rem}.paranormal-inc.sheet.actor .grid.two{grid-template-columns:1fr 1fr}.paranormal-inc.sheet.actor .grid.five{grid-template-columns:repeat(5,minmax(0,1fr))}.paranormal-inc.sheet.actor .stats input{text-align:center}.paranormal-inc.sheet.actor .hauntings{list-style:none;padding:0;margin:0}.paranormal-inc.sheet.actor .hauntings li{margin-bottom:.5rem}

@@ -1,2 +1,1 @@
-// module/item.js
-export class PINItem extends Item {}
+export class PINItem extends Item{}
