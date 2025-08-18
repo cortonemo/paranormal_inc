@@ -1,13 +1,13 @@
 {
   "id": "paranormal_inc",
-  "version": "0.1.0",
+  "version": "0.0.12",
   "title": "Paranormal Inc",
   "url": "https://github.com/cortonemo/paranormal_inc/",
-  "description": "Lightweight system scaffold for Paranormal Inc with archetype-driven character sheet (Scientist included).",
+  "description": "A minimalist game system which provides configurable Actor and Item templates to support Paranormal_Inc system game-play.",
   "license": "LICENSE.txt",
   "authors": [
     {
-      "name": "Serelith",
+      "name": "Atropos",
       "url": "https://foundryvtt.com"
     }
   ],
@@ -21,14 +21,14 @@
       "path": "lang/en.json"
     },
     {
-      "lang": "pt",
-      "name": "Portugu\u00eas",
+      "lang": "pl",
+      "name": "Português",
       "path": "lang/pt.json"
     }
   ],
   "compatibility": {
     "minimum": "10",
-    "verified": "13"
+    "verified": "11"
   },
   "grid": {
     "distance": 5,
