@@ -1,13 +1,13 @@
 {
-  "id": "worldbuilding",
-  "version": "0.8.2",
-  "title": "Simple World-Building",
-  "url": "https://github.com/foundryvtt/worldbuilding/",
-  "description": "A minimalist game system which provides configurable Actor and Item templates to support free-form system agnostic game-play.",
+  "id": "paranormal_inc",
+  "version": "0.1.0",
+  "title": "Paranormal Inc",
+  "url": "https://github.com/cortonemo/paranormal_inc/",
+  "description": "Lightweight system scaffold for Paranormal Inc with archetype-driven character sheet (Scientist included).",
   "license": "LICENSE.txt",
   "authors": [
     {
-      "name": "Atropos",
+      "name": "Serelith",
       "url": "https://foundryvtt.com"
     }
   ],
@@ -21,14 +21,14 @@
       "path": "lang/en.json"
     },
     {
-      "lang": "pl",
-      "name": "Polski",
-      "path": "lang/pl.json"
+      "lang": "pt",
+      "name": "Portugu\u00eas",
+      "path": "lang/pt.json"
     }
   ],
   "compatibility": {
     "minimum": "10",
-    "verified": "11"
+    "verified": "13"
   },
   "grid": {
     "distance": 5,
@@ -36,6 +36,6 @@
   },
   "primaryTokenAttribute": "health",
   "secondaryTokenAttribute": "power",
-  "manifest": "https://raw.githubusercontent.com/foundryvtt/worldbuilding/master/system.json",
-  "download": "https://github.com/foundryvtt/worldbuilding/archive/refs/tags/release-082.zip"
+  "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/master/system.json",
+  "download": "https://github.com/cortonemo/paranormal_inc/archive/refs/heads/master.zip"
 }
