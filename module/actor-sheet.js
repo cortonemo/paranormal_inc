@@ -33,7 +33,14 @@ export class PINActorSheet extends ActorSheet {
     data.arch.moveMap = Object.fromEntries((data.arch.moves ?? []).map(m => [m.key, m]));
 
     data.cssClass = `${data.cssClass ?? ""} arche-${sys.archetype}`;
-    return data;
+	// Build alphabetically sorted archetype list for the dropdown
+	const entries = Object.entries(CONFIG.PIN.archetypes);
+	entries.sort(([, a], [, b]) =>
+	  a.label.localeCompare(b.label, game?.i18n?.lang || "en", { sensitivity: "base" })
+	);
+	data.sortedArchetypes = entries.map(([key, arch]) => ({ key, label: arch.label }));
+    
+	return data;
   }
 
   activateListeners(html) {

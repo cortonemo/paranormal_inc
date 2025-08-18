@@ -30,7 +30,16 @@
   height: auto;
   display: block;
 }
-
+/* Cap the art size and keep aspect ratio */
+.paranormal-inc.sheet.actor .playbook-art {
+  max-height: 280px;      /* ← change this to taste */
+}
+.paranormal-inc.sheet.actor .playbook-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;     /* no crop; fit inside the cap */
+  display: block;
+}
 /* Optional: cap art height while preserving aspect ratio */
 .paranormal-inc.sheet.actor .playbook-art--cap { max-height: 340px; }
 .paranormal-inc.sheet.actor .playbook-art--cap img {

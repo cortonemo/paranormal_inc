@@ -21,9 +21,9 @@
         <div>
           <label data-i18n="PIN.Archetype">Archetype</label>
           <select name="system.archetype">
-            {{#each config.archetypes as |arch key|}}
-              <option value="{{key}}" {{#if (eq ../system.archetype key)}}selected{{/if}}>{{arch.label}}</option>
-            {{/each}}
+			{{#each sortedArchetypes as |a|}}
+			  <option value="{{a.key}}" {{#if (eq ../system.archetype a.key)}}selected{{/if}}>{{a.label}}</option>
+			{{/each}}
           </select>
         </div>
       </div>
