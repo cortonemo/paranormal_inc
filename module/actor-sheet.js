@@ -1,9 +1,10 @@
 // module/actor-sheet.js
 // Paranormal Inc — Actor Sheet
 // - Archetype dropdown (alphabetical)
-// - Moves as checkboxes (choose exactly 2)
-// - Personal Hauntings multi-select
-// Requires: CONFIG.PIN.archetypes defined in module/constants.js
+// - Moves as checkboxes (choose EXACTLY 2)
+// - Personal Hauntings as checkboxes (start at 0, any order)
+// - Works for Actor types: "character" and "npc"
+// Requires: CONFIG.PIN.archetypes from module/constants.js
 
 export class PINActorSheet extends ActorSheet {
   static get defaultOptions() {
@@ -18,7 +19,7 @@ export class PINActorSheet extends ActorSheet {
   async getData(options) {
     const data = await super.getData(options);
 
-    // --- Ensure system data shape -----------------------------------------
+    // ---- Ensure a stable system data shape --------------------------------
     const sys = this.actor.system ?? {};
     sys.archetype ??= "scientist";
     sys.pronouns ??= "";
@@ -26,8 +27,9 @@ export class PINActorSheet extends ActorSheet {
     sys.vibe ??= "";
     sys.backpack ??= "";
     sys.conditions ??= "";
-    sys.moves ??= { selected: [] };          // selected: string[]
-    sys.hauntings ??= { marked: [] };        // marked: string[]
+    sys.moves ??= { selected: [] };      // string[]
+    sys.hauntings ??= {};                // { [key: string]: boolean, marked?: string[] }
+    sys.hauntings.marked ??= [];
     sys.biography ??= "";
     sys.archetypeImage ??= "";
 
@@ -38,25 +40,48 @@ export class PINActorSheet extends ActorSheet {
     const arch = data.config.archetypes[sys.archetype] ?? {};
     data.arch = arch;
 
-    // Sorted archetypes for dropdown
+    // ---- Build alphabetically sorted archetype list for the dropdown ------
     const entries = Object.entries(data.config.archetypes);
     entries.sort(([, a], [, b]) =>
       (a?.label ?? "").localeCompare(b?.label ?? "", game?.i18n?.lang || "en", { sensitivity: "base" })
     );
     data.sortedArchetypes = entries.map(([key, a]) => ({ key, label: a.label }));
 
-    // Normalize move selection to valid keys only
+    // ---- Normalize move selection: EXACTLY two, valid, unique -------------
     const availMoveKeys = (arch.moves ?? []).map(m => m.key);
-    sys.moves.selected = Array.from(
-      new Set((sys.moves.selected ?? []).filter(k => availMoveKeys.includes(k)))
-    );
+    let sel = Array.from(new Set((sys.moves.selected ?? []).filter(k => availMoveKeys.includes(k))));
+    // Autoselect first two if fewer than 2
+    for (const key of availMoveKeys) {
+      if (sel.length >= 2) break;
+      if (!sel.includes(key)) sel.push(key);
+    }
+    // If more than two somehow, trim.
+    sel = sel.slice(0, 2);
+    sys.moves.selected = sel;
 
-    // Build a quick lookup for the template to show move text by key
+    // Lookup map so templates can show name/text by key
     data.arch.moveMap = Object.fromEntries((arch.moves ?? []).map(m => [m.key, m]));
 
-    // Normalize hauntings: strip invalid keys
+    // ---- Normalize hauntings: booleans + "marked" array stay in sync ------
     const availHauntingKeys = (arch.hauntings ?? []).map(h => h.key);
+
+    // Drop stale keys from marked
     sys.hauntings.marked = (sys.hauntings.marked ?? []).filter(k => availHauntingKeys.includes(k));
+
+    // Ensure every valid key has a boolean (default false)
+    for (const k of availHauntingKeys) {
+      if (typeof sys.hauntings[k] !== "boolean") sys.hauntings[k] = false;
+      // Keep "marked" in sync from booleans
+      if (sys.hauntings[k] && !sys.hauntings.marked.includes(k)) sys.hauntings.marked.push(k);
+      if (!sys.hauntings[k] && sys.hauntings.marked.includes(k)) {
+        sys.hauntings.marked = sys.hauntings.marked.filter(x => x !== k);
+      }
+    }
+    // Remove booleans for keys not in this archetype
+    for (const k of Object.keys(sys.hauntings)) {
+      if (k === "marked") continue;
+      if (!availHauntingKeys.includes(k)) delete sys.hauntings[k];
+    }
 
     // CSS helper
     data.cssClass = `${data.cssClass ?? ""} arche-${sys.archetype}`;
@@ -68,13 +93,27 @@ export class PINActorSheet extends ActorSheet {
   activateListeners(html) {
     super.activateListeners(html);
 
-    // Change archetype
+    // ---- Archetype change --------------------------------------------------
     html.find('[name="system.archetype"]').on("change", async (ev) => {
-      await this.actor.update({ "system.archetype": ev.currentTarget.value });
+      const newArchKey = ev.currentTarget.value;
+      const newArch = CONFIG.PIN.archetypes[newArchKey] ?? { moves: [], hauntings: [] };
+
+      // Reset moves to first two of the new archetype
+      const firstTwo = (newArch.moves ?? []).slice(0, 2).map(m => m.key);
+      const updates = {
+        "system.archetype": newArchKey,
+        "system.moves.selected": firstTwo
+      };
+
+      // Clear all hauntings when switching archetype
+      updates["system.hauntings"] = { marked: [] };
+      for (const h of (newArch.hauntings ?? [])) updates[`system.hauntings.${h.key}`] = false;
+
+      await this.actor.update(updates);
       this.render(false);
     });
 
-    // --- Moves: checkboxes, exactly 2 selected ----------------------------
+    // ---- Moves: checkboxes, EXACTLY 2 selected ----------------------------
     html.on("change", ".pin-move-toggle", async (ev) => {
       const key = ev.currentTarget.dataset.move;
       const selected = new Set(this.actor.system.moves?.selected ?? []);
@@ -97,22 +136,22 @@ export class PINActorSheet extends ActorSheet {
       }
 
       await this.actor.update({ "system.moves.selected": Array.from(selected) });
-      // Re-render to refresh the "Chosen Moves" text (if you show it)
       this.render(false);
     });
 
-    // --- Personal Hauntings: multi-select ---------------------------------
-    html.on("change", ".pin-hauntings-select", async (ev) => {
-      const values = Array.from(ev.currentTarget.selectedOptions).map((o) => o.value);
-      const arch = CONFIG.PIN.archetypes[this.actor.system.archetype] ?? {};
-      const updates = { "system.hauntings.marked": values };
+    // ---- Personal Hauntings: independent checkboxes (start at 0) ----------
+    html.on("change", ".pin-haunting", async (ev) => {
+      const key = ev.currentTarget.dataset.key;
+      const checked = ev.currentTarget.checked;
 
-      // Also mirror per-haunting boolean flags if you want to query them elsewhere
-      for (const h of arch.hauntings ?? []) {
-        updates[`system.hauntings.${h.key}`] = values.includes(h.key);
-      }
+      // Update boolean and maintain the "marked" array for convenience
+      const marked = new Set(this.actor.system.hauntings?.marked ?? []);
+      if (checked) marked.add(key); else marked.delete(key);
 
-      await this.actor.update(updates);
+      await this.actor.update({
+        [`system.hauntings.${key}`]: checked,
+        "system.hauntings.marked": Array.from(marked)
+      });
     });
   }
 }

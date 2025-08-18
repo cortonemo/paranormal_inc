@@ -1,4 +1,3 @@
-<!-- templates/actor-sheet.html -->
 <form class="flexcol {{cssClass}}" autocomplete="off">
   <header class="sheet-header">
     <div class="header-fields">
@@ -21,9 +20,9 @@
         <div>
           <label data-i18n="PIN.Archetype">Archetype</label>
           <select name="system.archetype">
-			{{#each sortedArchetypes as |a|}}
-			  <option value="{{a.key}}" {{#if (eq ../system.archetype a.key)}}selected{{/if}}>{{a.label}}</option>
-			{{/each}}
+            {{#each sortedArchetypes as |a|}}
+              <option value="{{a.key}}" {{#if (eq ../system.archetype a.key)}}selected{{/if}}>{{a.label}}</option>
+            {{/each}}
           </select>
         </div>
       </div>
@@ -31,45 +30,62 @@
   </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="playbook" data-i18n="PIN.Playbook">Playbook</a>
-    <a class="item" data-tab="moves" data-i18n="PIN.Moves">Moves</a>
-    <a class="item" data-tab="notes" data-i18n="PIN.Notes">Notes</a>
+    <a class="item" data-tab="playbook"  data-i18n="PIN.Playbook">Playbook</a>
+    <a class="item" data-tab="hauntings">Personal Hauntings</a>
+    <a class="item" data-tab="notes"     data-i18n="PIN.Notes">Notes</a>
   </nav>
 
   <section class="sheet-body">
+    <!-- Page 1 layout (title/art/vibe) + MOVES -->
     <div class="tab" data-group="primary" data-tab="playbook">
       {{> (lookup (lookup config.archetypes system.archetype) "partial") }}
+      <section class="moves-pane">
+        <h3>Moves</h3>
+        <p class="subtle"><em>Choose exactly 2 of the following options:</em></p>
+        <ol class="move-options">
+          {{#each arch.moves as |opt|}}
+            <li class="flexcol">
+              <label class="flexrow">
+                <input type="checkbox"
+                       class="pin-move-toggle big-check"
+                       data-move="{{opt.key}}"
+                       {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}>
+                <strong>{{opt.name}}</strong>
+              </label>
+              <div class="move-text">{{opt.text}}</div>
+            </li>
+          {{/each}}
+        </ol>
+      </section>
     </div>
 
-    <div class="tab" data-group="primary" data-tab="moves">
-	  <p><em>Choose exactly 2 moves:</em></p>
-	  <ol class="move-options">
-		{{#each arch.moves as |opt|}}
-		  <li class="flexcol">
-			<label class="flexrow">
-			  <input type="checkbox"
-					 class="pin-move-toggle"
-					 data-move="{{opt.key}}"
-					 {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}>
-			  <strong>{{opt.name}}</strong>
-			</label>
-			<div class="move-text">{{opt.text}}</div>
-		  </li>
-		{{/each}}
-	  </ol>
-	</div>
-
-
-      <div class="chosen-moves">
-        <h4>Chosen Moves</h4>
-        <ul>
-          {{#each system.moves.selected as |selKey i|}}
-            {{#with (lookup ../arch.moveMap selKey) as |move|}}
-              <li><strong>{{move.name}}</strong> — {{move.text}}</li>
-            {{/with}}
-          {{/each}}
-        </ul>
-      </div>
+    <!-- Page 2 layout (Backpack/Conditions + HAUNTINGS) -->
+    <div class="tab" data-group="primary" data-tab="hauntings">
+      <section class="grid two">
+        <div>
+          <h3>Backpack</h3>
+          <textarea class="lined" name="system.backpack" rows="10" placeholder="One item per line">{{system.backpack}}</textarea>
+          <h3>Conditions</h3>
+          <textarea class="lined" name="system.conditions" rows="6" placeholder="Condition list">{{system.conditions}}</textarea>
+        </div>
+        <div>
+          <h3>Personal Hauntings</h3>
+          <p class="subtle">Mark in any order. When you mark a new one, follow its instruction.</p>
+          <ul class="hauntings">
+            {{#each arch.hauntings as |h|}}
+              <li>
+                <label class="flexrow">
+                  <input type="checkbox" class="pin-haunting big-check"
+                         data-key="{{h.key}}"
+                         {{#if (eq (lookup ../system.hauntings h.key) true)}}checked{{/if}}>
+                  <strong>{{h.name}}</strong>
+                </label>
+                <div class="hint">{{h.text}}</div>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </section>
     </div>
 
     <div class="tab" data-group="primary" data-tab="notes">

@@ -1,33 +1,20 @@
-<section class="grid two archetype scientist">
+<section class="grid two playbook-layout">
   <div>
     <h2>The Scientist</h2>
     <p class="tagline">Tests Things</p>
-	<figure class="playbook-art">
-		<img src="{{system.archetypeImage}}" onerror="this.src='{{arch.imageHint}}'">
-	</figure>
-    <div class="vibe"><label>Vibe</label>
-      <input type="text" name="system.vibe" value="{{system.vibe}}" placeholder="tidy, disheveled, professional…">
+
+    <figure class="playbook-art">
+      <img src="{{system.archetypeImage}}" onerror="this.src='{{arch.imageHint}}'">
+    </figure>
+
+    <div class="vibe">
+      <label>Vibe</label>
+      <input type="text" name="system.vibe" value="{{system.vibe}}"
+             placeholder="nervous, confident, quirky…">
       <small>Suggestions: {{arch.vibeSuggestions}}</small>
     </div>
-    <div class="backpack"><label>Backpack</label><textarea name="system.backpack" rows="6" placeholder="One item per line">{{system.backpack}}</textarea></div>
-    <div class="conditions"><label>Conditions</label><textarea name="system.conditions" rows="4" placeholder="List conditions">{{system.conditions}}</textarea></div>
   </div>
-  <div>
-	<h3>Personal Hauntings</h3>
-	<p>Select one or more to mark. When you select a new one, follow its instruction.</p>
 
-	<select class="pin-hauntings-select" multiple size="6">
-	  {{#each arch.hauntings as |h|}}
-		<option value="{{h.key}}" {{#if (includes ../system.hauntings.marked h.key)}}selected{{/if}}>
-		  {{h.name}}
-		</option>
-	  {{/each}}
-	</select>
-
-	<div class="hint-list">
-	  {{#each arch.hauntings as |h|}}
-		<p><strong>{{h.name}}</strong>: {{h.text}}</p>
-	  {{/each}}
-	</div>
-  </div>
+  <!-- Right column on this page is occupied by MOVES from actor-sheet.html -->
+  <div></div>
 </section>
