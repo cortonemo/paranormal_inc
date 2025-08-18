@@ -33,7 +33,7 @@
 }
 
 /* Optional alternative cap (use class 'playbook-art--cap' in HTML if you prefer case-by-case) */
-.paranormal-inc.sheet.actor .playbook-art--cap { max-height: 340px; }
+.paranormal-inc.sheet.actor .playbook-art--cap { max-height: 400px; }
 .paranormal-inc.sheet.actor .playbook-art--cap img {
   width: 100%;
   height: 100%;
