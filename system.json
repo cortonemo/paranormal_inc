@@ -1,6 +1,6 @@
 {
   "id": "paranormal_inc",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "title": "Paranormal Inc",
   "url": "https://github.com/cortonemo/paranormal_inc/",
   "description": "A minimalist game system which provides configurable Actor and Item templates to support Paranormal_Inc system game-play.",

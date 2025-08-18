@@ -12,7 +12,7 @@ Hooks.once("init", function() {
   CONFIG.Actor.documentClass = PINActor;
   CONFIG.Item.documentClass = PINItem;
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("paranormal_inc", PINActorSheet, { types: ["character"], makeDefault: true });
+  Actors.registerSheet("paranormal_inc", PINActorSheet, {  types: ["character","npc"],  makeDefault: true});
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("paranormal_inc", PINItemSheet, { makeDefault: true });
 });

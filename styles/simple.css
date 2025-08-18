@@ -32,12 +32,18 @@
   display: block;
 }
 
-/* Optional alternative cap (use class 'playbook-art--cap' in HTML if you prefer case-by-case) */
-.paranormal-inc.sheet.actor .playbook-art--cap { max-height: 400px; }
-.paranormal-inc.sheet.actor .playbook-art--cap img {
+/* Playbook art: fixed viewport, image fits inside */
+.paranormal-inc.sheet.actor .playbook-art {
+  height: 220px;          /* adjust until it feels right */
+  margin: .5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.paranormal-inc.sheet.actor .playbook-art img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: contain;     /* show whole image, no crop */
+  display: block;
 }
 
 /* === Hauntings === */

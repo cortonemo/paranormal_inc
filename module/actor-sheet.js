@@ -1,4 +1,10 @@
 // module/actor-sheet.js
+// Paranormal Inc — Actor Sheet
+// - Archetype dropdown (alphabetical)
+// - Moves as checkboxes (choose exactly 2)
+// - Personal Hauntings multi-select
+// Requires: CONFIG.PIN.archetypes defined in module/constants.js
+
 export class PINActorSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
@@ -8,80 +14,104 @@ export class PINActorSheet extends ActorSheet {
     });
   }
 
+  /** @override */
   async getData(options) {
     const data = await super.getData(options);
+
+    // --- Ensure system data shape -----------------------------------------
     const sys = this.actor.system ?? {};
     sys.archetype ??= "scientist";
-    sys.moves ??= { selected: [] };
+    sys.pronouns ??= "";
     sys.stats ??= { science: 0, wits: 0, vigour: 0, intuition: 0 };
-    sys.hauntings ??= { marked: [] };
+    sys.vibe ??= "";
+    sys.backpack ??= "";
+    sys.conditions ??= "";
+    sys.moves ??= { selected: [] };          // selected: string[]
+    sys.hauntings ??= { marked: [] };        // marked: string[]
+    sys.biography ??= "";
+    sys.archetypeImage ??= "";
 
     data.system = sys;
-    data.config = CONFIG.PIN;
-    data.arch   = CONFIG.PIN.archetypes[sys.archetype] ?? {};
+    data.config = CONFIG.PIN ?? { archetypes: {} };
 
-    // Ensure 2 valid, unique selected moves.
-    const avail = (data.arch.moves ?? []).map(m => m.key);
-    let sel = Array.from(new Set((sys.moves.selected ?? []).filter(k => avail.includes(k))));
-    while (sel.length < 2 && avail[sel.length]) {
-      const k = avail[sel.length];
-      if (!sel.includes(k)) sel.push(k); else break;
-    }
-    sys.moves.selected = sel;
+    // Current archetype config
+    const arch = data.config.archetypes[sys.archetype] ?? {};
+    data.arch = arch;
 
-    // Map for template lookups (name + text by key)
-    data.arch.moveMap = Object.fromEntries((data.arch.moves ?? []).map(m => [m.key, m]));
+    // Sorted archetypes for dropdown
+    const entries = Object.entries(data.config.archetypes);
+    entries.sort(([, a], [, b]) =>
+      (a?.label ?? "").localeCompare(b?.label ?? "", game?.i18n?.lang || "en", { sensitivity: "base" })
+    );
+    data.sortedArchetypes = entries.map(([key, a]) => ({ key, label: a.label }));
 
+    // Normalize move selection to valid keys only
+    const availMoveKeys = (arch.moves ?? []).map(m => m.key);
+    sys.moves.selected = Array.from(
+      new Set((sys.moves.selected ?? []).filter(k => availMoveKeys.includes(k)))
+    );
+
+    // Build a quick lookup for the template to show move text by key
+    data.arch.moveMap = Object.fromEntries((arch.moves ?? []).map(m => [m.key, m]));
+
+    // Normalize hauntings: strip invalid keys
+    const availHauntingKeys = (arch.hauntings ?? []).map(h => h.key);
+    sys.hauntings.marked = (sys.hauntings.marked ?? []).filter(k => availHauntingKeys.includes(k));
+
+    // CSS helper
     data.cssClass = `${data.cssClass ?? ""} arche-${sys.archetype}`;
-	// Build alphabetically sorted archetype list for the dropdown
-	const entries = Object.entries(CONFIG.PIN.archetypes);
-	entries.sort(([, a], [, b]) =>
-	  a.label.localeCompare(b.label, game?.i18n?.lang || "en", { sensitivity: "base" })
-	);
-	data.sortedArchetypes = entries.map(([key, arch]) => ({ key, label: arch.label }));
-    
-	return data;
+
+    return data;
   }
 
+  /** @override */
   activateListeners(html) {
     super.activateListeners(html);
 
-    html.find('[name="system.archetype"]').on("change", async ev => {
+    // Change archetype
+    html.find('[name="system.archetype"]').on("change", async (ev) => {
       await this.actor.update({ "system.archetype": ev.currentTarget.value });
       this.render(false);
     });
 
-    // Two dropdowns for moves; keep them different.
-    html.on("change", ".pin-move-select", async ev => {
-      const idx    = Number(ev.currentTarget.dataset.index);
-      const newKey = ev.currentTarget.value;
-      const arch   = CONFIG.PIN.archetypes[this.actor.system.archetype] ?? {};
-      const avail  = (arch.moves ?? []).map(m => m.key);
+    // --- Moves: checkboxes, exactly 2 selected ----------------------------
+    html.on("change", ".pin-move-toggle", async (ev) => {
+      const key = ev.currentTarget.dataset.move;
+      const selected = new Set(this.actor.system.moves?.selected ?? []);
+      const MIN = 2, MAX = 2;
 
-      let sel = Array.from(this.actor.system.moves?.selected ?? []);
-      if (!avail.includes(newKey)) return;
-
-      sel[idx] = newKey;
-
-      // If both are identical, adjust the other to the first available different.
-      if (sel[0] && sel[1] && sel[0] === sel[1]) {
-        const replacement = avail.find(k => !sel.includes(k)) ?? "";
-        sel[1 - idx] = replacement;
-        ui.notifications?.warn("Moves must be different; adjusted the other slot.");
+      if (ev.currentTarget.checked) {
+        if (selected.size >= MAX) {
+          ui.notifications?.warn(`You can select exactly ${MAX} moves.`);
+          ev.currentTarget.checked = false;
+          return;
+        }
+        selected.add(key);
+      } else {
+        if (selected.size <= MIN) {
+          ui.notifications?.warn(`You must keep ${MIN} moves selected.`);
+          ev.currentTarget.checked = true;
+          return;
+        }
+        selected.delete(key);
       }
 
-      await this.actor.update({ "system.moves.selected": sel });
+      await this.actor.update({ "system.moves.selected": Array.from(selected) });
+      // Re-render to refresh the "Chosen Moves" text (if you show it)
       this.render(false);
     });
 
-    // Multi-select for personal hauntings. Selected = marked.
-    html.on("change", ".pin-hauntings-select", async ev => {
-      const values = Array.from(ev.currentTarget.selectedOptions).map(o => o.value);
-      const arch   = CONFIG.PIN.archetypes[this.actor.system.archetype] ?? {};
+    // --- Personal Hauntings: multi-select ---------------------------------
+    html.on("change", ".pin-hauntings-select", async (ev) => {
+      const values = Array.from(ev.currentTarget.selectedOptions).map((o) => o.value);
+      const arch = CONFIG.PIN.archetypes[this.actor.system.archetype] ?? {};
       const updates = { "system.hauntings.marked": values };
-      for (const h of (arch.hauntings ?? [])) {
+
+      // Also mirror per-haunting boolean flags if you want to query them elsewhere
+      for (const h of arch.hauntings ?? []) {
         updates[`system.hauntings.${h.key}`] = values.includes(h.key);
       }
+
       await this.actor.update(updates);
     });
   }

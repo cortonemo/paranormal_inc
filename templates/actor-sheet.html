@@ -42,24 +42,23 @@
     </div>
 
     <div class="tab" data-group="primary" data-tab="moves">
-      <div class="grid two">
-        <div>
-          <label>Move 1</label>
-          <select class="pin-move-select" data-index="0">
-            {{#each arch.moves as |opt|}}
-              <option value="{{opt.key}}" {{#if (eq (lookup ../system.moves.selected 0) opt.key)}}selected{{/if}}>{{opt.name}}</option>
-            {{/each}}
-          </select>
-        </div>
-        <div>
-          <label>Move 2</label>
-          <select class="pin-move-select" data-index="1">
-            {{#each arch.moves as |opt|}}
-              <option value="{{opt.key}}" {{#if (eq (lookup ../system.moves.selected 1) opt.key)}}selected{{/if}}>{{opt.name}}</option>
-            {{/each}}
-          </select>
-        </div>
-      </div>
+	  <p><em>Choose exactly 2 moves:</em></p>
+	  <ol class="move-options">
+		{{#each arch.moves as |opt|}}
+		  <li class="flexcol">
+			<label class="flexrow">
+			  <input type="checkbox"
+					 class="pin-move-toggle"
+					 data-move="{{opt.key}}"
+					 {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}>
+			  <strong>{{opt.name}}</strong>
+			</label>
+			<div class="move-text">{{opt.text}}</div>
+		  </li>
+		{{/each}}
+	  </ol>
+	</div>
+
 
       <div class="chosen-moves">
         <h4>Chosen Moves</h4>
