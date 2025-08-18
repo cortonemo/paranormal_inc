@@ -1,20 +1,14 @@
-<section class="grid two playbook-layout">
-  <div>
-    <h2>The Skeptic</h2>
-    <p class="tagline">Doubts Things</p>
+<!-- templates/archetypes/skeptic.html -->
+<h2>The Skeptic</h2>
+<p class="tagline">Doubts Things</p>
 
-    <figure class="playbook-art">
-      <img src="{{system.archetypeImage}}" onerror="this.src='{{arch.imageHint}}'">
-    </figure>
+<figure class="playbook-art">
+  <img src="{{system.archetypeImage}}" onerror="this.src='{{arch.imageHint}}'">
+</figure>
 
-    <div class="vibe">
-      <label>Vibe</label>
-      <input type="text" name="system.vibe" value="{{system.vibe}}"
-             placeholder="nervous, confident, quirky…">
-      <small>Suggestions: {{arch.vibeSuggestions}}</small>
-    </div>
-  </div>
-
-  <!-- Right column on this page is occupied by MOVES from actor-sheet.html -->
-  <div></div>
-</section>
+<div class="vibe">
+  <label>Vibe</label>
+  <input type="text" name="system.vibe" value="{{system.vibe}}"
+         placeholder="put-together, sloppy, passionate, highly caffeinated, know-it-all, fearful, disorganized, steady"
+  <small>Suggestions: {{arch.vibeSuggestions}}</small>
+</div>
