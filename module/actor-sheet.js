@@ -7,13 +7,17 @@
 // Requires: CONFIG.PIN.archetypes from module/constants.js
 
 export class PINActorSheet extends ActorSheet {
-  static get defaultOptions() {
-    return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["paranormal-inc", "sheet", "actor"],
-      template: "systems/paranormal_inc/templates/actor-sheet.html",
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }]
-    });
-  }
+	static get defaultOptions() {
+	  const base = super.defaultOptions;
+	  return foundry.utils.mergeObject(base, {
+		classes: ["paranormal-inc", "sheet", "actor"],
+		template: "systems/paranormal_inc/templates/actor-sheet.html",
+		tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }],
+		resizable: true,
+		width:  base.width  ?? 720,
+		height: Math.round((base.height ?? 720) * 1.05)   // ← +5% taller
+	  });
+	}
 
   /** @override */
   async getData(options) {
@@ -47,14 +51,12 @@ export class PINActorSheet extends ActorSheet {
     );
     data.sortedArchetypes = entries.map(([key, a]) => ({ key, label: a.label }));
 
-    // ---- Normalize move selection: EXACTLY two, valid, unique -------------
-    const availMoveKeys = (arch.moves ?? []).map(m => m.key);
-    let sel = Array.from(new Set((sys.moves.selected ?? []).filter(k => availMoveKeys.includes(k))));
-    // Autoselect first two if fewer than 2
-    for (const key of availMoveKeys) {
-      if (sel.length >= 2) break;
-      if (!sel.includes(key)) sel.push(key);
-    }
+	// Normalize move selection: keep only valid & unique, but don't auto-top-up
+	const availMoveKeys = (arch.moves ?? []).map(m => m.key);
+	sys.moves.selected = Array.from(
+	  new Set((sys.moves.selected ?? []).filter(k => availMoveKeys.includes(k)))
+	).slice(0, 2);  // cap at 2 selected
+
     // If more than two somehow, trim.
     sel = sel.slice(0, 2);
     sys.moves.selected = sel;
@@ -95,49 +97,43 @@ export class PINActorSheet extends ActorSheet {
 
     // ---- Archetype change --------------------------------------------------
     html.find('[name="system.archetype"]').on("change", async (ev) => {
-      const newArchKey = ev.currentTarget.value;
-      const newArch = CONFIG.PIN.archetypes[newArchKey] ?? { moves: [], hauntings: [] };
+	  const newArchKey = ev.currentTarget.value;
+	  const newArch = CONFIG.PIN.archetypes[newArchKey] ?? { moves: [], hauntings: [] };
 
-      // Reset moves to first two of the new archetype
-      const firstTwo = (newArch.moves ?? []).slice(0, 2).map(m => m.key);
-      const updates = {
-        "system.archetype": newArchKey,
-        "system.moves.selected": firstTwo
-      };
+	  const updates = {
+		"system.archetype": newArchKey,
+		"system.moves.selected": []     // ← start with none selected
+	  };
 
-      // Clear all hauntings when switching archetype
-      updates["system.hauntings"] = { marked: [] };
-      for (const h of (newArch.hauntings ?? [])) updates[`system.hauntings.${h.key}`] = false;
+	  // Clear all hauntings when switching archetype
+	  updates["system.hauntings"] = { marked: [] };
+	  for (const h of (newArch.hauntings ?? [])) updates[`system.hauntings.${h.key}`] = false;
 
-      await this.actor.update(updates);
-      this.render(false);
-    });
+	  await this.actor.update(updates);
+	  this.render(false);
+	});
 
     // ---- Moves: checkboxes, EXACTLY 2 selected ----------------------------
-    html.on("change", ".pin-move-toggle", async (ev) => {
-      const key = ev.currentTarget.dataset.move;
-      const selected = new Set(this.actor.system.moves?.selected ?? []);
-      const MIN = 2, MAX = 2;
+	html.on("change", ".pin-move-toggle", async (ev) => {
+	  const key = ev.currentTarget.dataset.move;
+	  const selected = new Set(this.actor.system.moves?.selected ?? []);
+	  const MAX = 2;
 
-      if (ev.currentTarget.checked) {
-        if (selected.size >= MAX) {
-          ui.notifications?.warn(`You can select exactly ${MAX} moves.`);
-          ev.currentTarget.checked = false;
-          return;
-        }
-        selected.add(key);
-      } else {
-        if (selected.size <= MIN) {
-          ui.notifications?.warn(`You must keep ${MIN} moves selected.`);
-          ev.currentTarget.checked = true;
-          return;
-        }
-        selected.delete(key);
-      }
+	  if (ev.currentTarget.checked) {
+		if (selected.size >= MAX) {
+		  ui.notifications?.warn(`You can select up to ${MAX} moves.`);
+		  ev.currentTarget.checked = false;
+		  return;
+		}
+		selected.add(key);
+	  } else {
+		// always allow unchecking; no minimum
+		selected.delete(key);
+	  }
 
-      await this.actor.update({ "system.moves.selected": Array.from(selected) });
-      this.render(false);
-    });
+	  await this.actor.update({ "system.moves.selected": Array.from(selected) });
+	  this.render(false);
+	});
 
     // ---- Personal Hauntings: independent checkboxes (start at 0) ----------
     html.on("change", ".pin-haunting", async (ev) => {
