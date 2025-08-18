@@ -1,42 +1,35 @@
 {
   "id": "paranormal_inc",
-  "version": "0.0.21",
   "title": "Paranormal Inc",
+  "version": "0.2.2",
+  "description": "Archetype-driven character & NPC sheets for the Paranormal Inc system.",
   "url": "https://github.com/cortonemo/paranormal_inc/",
-  "description": "A minimalist game system which provides configurable Actor and Item templates to support Paranormal_Inc system game-play.",
   "license": "LICENSE.txt",
+
   "authors": [
-    {
-      "name": "Atropos",
-      "name": "Serelith",
-      "url": "https://foundryvtt.com"
-    }
+    { "name": "Serelith", "url": "https://foundryvtt.com" }
   ],
+
   "esmodules": ["module/simple.js"],
   "styles": ["styles/simple.css"],
+  "template": "template.json",
   "packs": [],
+
   "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    },
-    {
-      "lang": "pl",
-      "name": "Português",
-      "path": "lang/pt.json"
-    }
+    { "lang": "en", "name": "English", "path": "lang/en.json" },
+    { "lang": "pt", "name": "Português", "path": "lang/pt.json" }
   ],
+
   "compatibility": {
-    "minimum": "10",
+    "minimum": "11",
     "verified": "13"
   },
+
   "grid": {
     "distance": 5,
     "units": "ft"
   },
-  "primaryTokenAttribute": "health",
-  "secondaryTokenAttribute": "power",
+
   "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/master/system.json",
   "download": "https://github.com/cortonemo/paranormal_inc/archive/refs/heads/master.zip"
 }
