@@ -1,6 +1,6 @@
 {
   "id": "paranormal_inc",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "title": "Paranormal Inc",
   "url": "https://github.com/cortonemo/paranormal_inc/",
   "description": "A minimalist game system which provides configurable Actor and Item templates to support Paranormal_Inc system game-play.",
@@ -12,7 +12,7 @@
       "url": "https://foundryvtt.com"
     }
   ],
-  "esmodules": ["module/simple.js"],
+  "esmodules": "esmodules": ["module/simple.js"]
   "styles": ["styles/simple.css"],
   "packs": [],
   "languages": [
