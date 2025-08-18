@@ -1,32 +1,33 @@
 {
-"Actor": {
-  "types": ["character"],
-  "htmlFields": ["biography"],
-  "character": {
-    "biography": "",
-    "health": {
-      "value": 10,
-      "min": 0,
-      "max": 10
+  "Actor": {
+    "types": [
+      "character"
+    ],
+    "templates": {
+      "base": {
+        "archetype": "scientist",
+        "pronouns": "",
+        "stats": {
+          "science": 0,
+          "wits": 0,
+          "vigour": 0,
+          "intuition": 0
+        },
+        "vibe": "",
+        "backpack": "",
+        "conditions": "",
+        "moves": {
+          "selected": []
+        },
+        "hauntings": {},
+        "biography": "",
+        "archetypeImage": ""
+      }
     },
-    "power": {
-      "value": 5,
-      "min": 0,
-      "max": 5
-    },
-    "attributes": {},
-    "groups": {}
+    "character": {
+      "templates": [
+        "base"
+      ]
+    }
   }
-},
-"Item": {
-  "types": ["item"],
-  "htmlFields": ["description"],
-  "item": {
-    "description": "",
-    "quantity": 1,
-    "weight": 0,
-    "attributes": {},
-    "groups": {}
-  }
-}
 }

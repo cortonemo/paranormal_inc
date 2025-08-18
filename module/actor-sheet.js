@@ -1,121 +1,55 @@
-import { EntitySheetHelper } from "./helper.js";
-import {ATTRIBUTE_TYPES} from "./constants.js";
-
-/**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
- */
-export class PinActorSheet extends ActorSheet {
-
-  /** @inheritdoc */
+// module/actor-sheet.js
+export class PINActorSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
-      classes: ["paranormal_inc", "sheet", "actor"],
+      classes: ["paranormal-inc", "sheet", "actor"],
       template: "systems/paranormal_inc/templates/actor-sheet.html",
-      width: 600,
-      height: 600,
-      tabs: [{navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "description"}],
-      scrollY: [".biography", ".items", ".attributes"],
-      dragDrop: [{dragSelector: ".item-list .item", dropSelector: null}]
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }]
     });
   }
 
-  /* -------------------------------------------- */
-
-  /** @inheritdoc */
   async getData(options) {
-    const context = await super.getData(options);
-    EntitySheetHelper.getAttributeData(context.data);
-    context.shorthand = !!game.settings.get("paranormal_inc", "macroShorthand");
-    context.systemData = context.data.system;
-    context.dtypes = ATTRIBUTE_TYPES;
-    context.biographyHTML = await TextEditor.enrichHTML(context.systemData.biography, {
-      secrets: this.document.isOwner,
-      async: true
-    });
-    return context;
+    const data = await super.getData(options);
+    const sys = this.actor.system ?? {};
+    sys.archetype ??= "scientist";
+    sys.moves ??= { selected: [] };
+    sys.stats ??= { science: 0, wits: 0, vigour: 0, intuition: 0 };
+    sys.hauntings ??= {};
+    data.system = sys;
+    data.config = CONFIG.PIN;
+    data.arch = CONFIG.PIN.archetypes[sys.archetype] ?? {};
+    data.cssClass = `${data.cssClass ?? ""} arche-${sys.archetype}`;
+    return data;
   }
 
-  /* -------------------------------------------- */
-
-  /** @inheritdoc */
   activateListeners(html) {
     super.activateListeners(html);
 
-    // Everything below here is only needed if the sheet is editable
-    if ( !this.isEditable ) return;
-
-    // Attribute Management
-    html.find(".attributes").on("click", ".attribute-control", EntitySheetHelper.onClickAttributeControl.bind(this));
-    html.find(".groups").on("click", ".group-control", EntitySheetHelper.onClickAttributeGroupControl.bind(this));
-    html.find(".attributes").on("click", "a.attribute-roll", EntitySheetHelper.onAttributeRoll.bind(this));
-
-    // Item Controls
-    html.find(".item-control").click(this._onItemControl.bind(this));
-    html.find(".items .rollable").on("click", this._onItemRoll.bind(this));
-
-    // Add draggable for Macro creation
-    html.find(".attributes a.attribute-roll").each((i, a) => {
-      a.setAttribute("draggable", true);
-      a.addEventListener("dragstart", ev => {
-        let dragData = ev.currentTarget.dataset;
-        ev.dataTransfer.setData('text/plain', JSON.stringify(dragData));
-      }, false);
+    html.find('[name="system.archetype"]').on("change", async ev => {
+      await this.actor.update({"system.archetype": ev.currentTarget.value});
+      this.render(false);
     });
-  }
 
-  /* -------------------------------------------- */
-
-  /**
-   * Handle click events for Item control buttons within the Actor Sheet
-   * @param event
-   * @private
-   */
-  _onItemControl(event) {
-    event.preventDefault();
-
-    // Obtain event data
-    const button = event.currentTarget;
-    const li = button.closest(".item");
-    const item = this.actor.items.get(li?.dataset.itemId);
-
-    // Handle different actions
-    switch ( button.dataset.action ) {
-      case "create":
-        const cls = getDocumentClass("Item");
-        return cls.create({name: game.i18n.localize("PIN.ItemNew"), type: "item"}, {parent: this.actor});
-      case "edit":
-        return item.sheet.render(true);
-      case "delete":
-        return item.delete();
-    }
-  }
-
-  /* -------------------------------------------- */
-
-  /**
-   * Listen for roll buttons on items.
-   * @param {MouseEvent} event    The originating left click event
-   */
-  _onItemRoll(event) {
-    let button = $(event.currentTarget);
-    const li = button.parents(".item");
-    const item = this.actor.items.get(li.data("itemId"));
-    let r = new Roll(button.data('roll'), this.actor.getRollData());
-    return r.toMessage({
-      user: game.user.id,
-      speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-      flavor: `<h2>${item.name}</h2><h3>${button.text()}</h3>`
+    html.on("change", ".pin-move-toggle", async ev => {
+      const key = ev.currentTarget.dataset.move;
+      const selected = new Set(this.actor.system.moves?.selected ?? []);
+      const max = 2;
+      if (ev.currentTarget.checked) {
+        if (selected.size >= max) {
+          ui.notifications?.warn(`You can only choose ${max} moves.`);
+          ev.currentTarget.checked = false;
+          return;
+        }
+        selected.add(key);
+      } else {
+        selected.delete(key);
+      }
+      await this.actor.update({"system.moves.selected": Array.from(selected)});
     });
-  }
 
-  /* -------------------------------------------- */
-
-  /** @inheritdoc */
-  _getSubmitData(updateData) {
-    let formData = super._getSubmitData(updateData);
-    formData = EntitySheetHelper.updateAttributes(formData, this.object);
-    formData = EntitySheetHelper.updateGroups(formData, this.object);
-    return formData;
+    html.on("change", ".pin-haunting", async ev => {
+      const key = ev.currentTarget.dataset.key;
+      await this.actor.update({[`system.hauntings.${key}`]: ev.currentTarget.checked});
+    });
   }
 }

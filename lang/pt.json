@@ -1,39 +1,13 @@
 {
-  "PIN.Settings.MacroShorthand.Name": "Sintaxe abreviada de macro",
-  "PIN.Settings.MacroShorthand.Hint": "Ativar uma sintaxe abreviada de macros que permite referir atributos diretamente, por exemplo @str em vez de @attributes.str.value. Desativa esta definição se precisares de referir o modelo completo de atributos, por exemplo @attributes.str.label.",
-  "PIN.Settings.InitiativeFormula.Name": "Fórmula de iniciativa",
-  "PIN.Settings.InitiativeFormula.Hint": "Introduz uma fórmula de iniciativa, por exemplo d20+@dex",
-
-  "PIN.Item.Create": "Criar item",
-  "PIN.Item.Edit": "Editar item",
-  "PIN.Item.Delete": "Eliminar item",
-  "PIN.Item.New": "Novo item",
-
-  "PIN.Notify.InitFormulaUpdated": "A fórmula de iniciativa foi atualizada para",
-  "PIN.Notify.InitFormulaInvalid": "A fórmula de iniciativa é inválida",
-  "PIN.Notify.GroupDuplicate": "O grupo de atributos já existe.",
-  "PIN.Notify.GroupAttrDuplicate": "O grupo de atributos já existe como atributo.",
-  "PIN.Notify.GroupAlphanumeric": "Os nomes dos grupos de atributos não podem conter espaços ou pontos.",
-  "PIN.Notify.GroupReserved": "O grupo de atributos \"{key}\" é reservado e não pode ser usado.",
-  "PIN.Notify.AttrDuplicate": "A chave de atributo já existe como grupo.",
-  "PIN.Notify.AttrInvalid": "As chaves de atributo não podem conter espaços ou pontos.",
-
-  "PIN.Resource.Min": "Mín",
-  "PIN.Resource.Value": "Valor",
-  "PIN.Resource.Max": "Máx",
-
-  "PIN.Template.Define": "Definir como modelo",
-  "PIN.Template.Unset": "Remover modelo",
-  "PIN.Template.None": "Sem modelo",
-
-  "PIN.Attribute.Key": "Chave do atributo",
-  "PIN.Attribute.Value": "Valor",
-  "PIN.Attribute.Label": "Etiqueta",
-  "PIN.Attribute.Dtype": "Tipo de dados",
-
-  "PIN.Group.Delete": "Eliminar grupo?",
-  "PIN.Group.DeleteContent": "Pretendes eliminar este grupo? Isto irá eliminar o seguinte grupo e todos os atributos que contém: ",
-
-  "PIN.Generic.Create": "Criar",
-  "PIN.Generic.New": "Novo"
+  "PIN.Name": "Nome",
+  "PIN.Pronouns": "Pronomes",
+  "PIN.Science": "Ci\u00eancia",
+  "PIN.Wits": "Ast\u00facia",
+  "PIN.Vigour": "Vigor",
+  "PIN.Intuition": "Intui\u00e7\u00e3o",
+  "PIN.Archetype": "Arqu\u00e9tipo",
+  "PIN.Playbook": "Playbook",
+  "PIN.Moves": "Movimentos",
+  "PIN.Notes": "Notas",
+  "PIN.ChooseTwo": "Escolhe 2 das seguintes op\u00e7\u00f5es:"
 }

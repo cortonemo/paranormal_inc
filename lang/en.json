@@ -1,39 +1,13 @@
 {
-  "PIN.Settings.MacroShorthand.Name": "Shortened macro syntax",
-  "PIN.Settings.MacroShorthand.Hint": "Enable a shortened macro syntax that allows referencing attributes directly, for example @str instead of @attributes.str.value. Disable this if you need to reference the full attribute model, for example @attributes.str.label.",
-  "PIN.Settings.InitiativeFormula.Name": "Initiative formula",
-  "PIN.Settings.InitiativeFormula.Hint": "Enter an initiative formula, such as d20+@dex",
-
-  "PIN.Item.Create": "Create Item",
-  "PIN.Item.Edit": "Edit Item",
-  "PIN.Item.Delete": "Delete Item",
-  "PIN.Item.New": "New Item",
-
-  "PIN.Notify.InitFormulaUpdated": "Initiative formula was updated to",
-  "PIN.Notify.InitFormulaInvalid": "Initiative formula was invalid",
-  "PIN.Notify.GroupDuplicate": "Attribute group already exists.",
-  "PIN.Notify.GroupAttrDuplicate": "Attribute group already exists as an attribute.",
-  "PIN.Notify.GroupAlphanumeric": "Attribute group names may not contain spaces or periods.",
-  "PIN.Notify.GroupReserved": "Attribute group \"{key}\" is reserved and cannot be used.",
-  "PIN.Notify.AttrDuplicate": "Attribute key already exists as a group.",
-  "PIN.Notify.AttrInvalid": "Attribute keys may not contain spaces or periods.",
-
-  "PIN.Resource.Min": "Min",
-  "PIN.Resource.Value": "Value",
-  "PIN.Resource.Max": "Max",
-
-  "PIN.Template.Define": "Define as Template",
-  "PIN.Template.Unset": "Unset Template",
-  "PIN.Template.None": "No Template",
-
-  "PIN.Attribute.Key": "Attribute Key",
-  "PIN.Attribute.Value": "Value",
-  "PIN.Attribute.Label": "Label",
-  "PIN.Attribute.Dtype": "Data Type",
-
-  "PIN.Group.Delete": "Delete group?",
-  "PIN.Group.DeleteContent": "Do you wish to delete this group? This will delete the following group and all attributes included in it: ",
-
-  "PIN.Generic.Create": "Create",
-  "PIN.Generic.New": "New"
+  "PIN.Name": "Name",
+  "PIN.Pronouns": "Pronouns",
+  "PIN.Science": "Science",
+  "PIN.Wits": "Wits",
+  "PIN.Vigour": "Vigour",
+  "PIN.Intuition": "Intuition",
+  "PIN.Archetype": "Archetype",
+  "PIN.Playbook": "Playbook",
+  "PIN.Moves": "Moves",
+  "PIN.Notes": "Notes",
+  "PIN.ChooseTwo": "Choose 2 of the following options:"
 }

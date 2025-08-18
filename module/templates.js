@@ -1,17 +1,16 @@
-/**
- * Define a set of template paths to pre-load
- * Pre-loaded templates are compiled and cached for fast access when rendering
- * @return {Promise}
- */
-export const preloadHandlebarsTemplates = async function() {
+// module/templates.js
+import { PIN } from "./constants.js";
 
-  // Define template paths to load
-  const templatePaths = [
-    // Attribute list partial.
-    "systems/paranormal_inc/templates/parts/sheet-attributes.html",
-    "systems/paranormal_inc/templates/parts/sheet-groups.html"
-  ];
+export const preloadHandlebarsTemplates = async () => {
+  const partials = Object.values(PIN.archetypes).map(a => a.partial);
+  return loadTemplates([
+    "systems/paranormal_inc/templates/actor-sheet.html",
+    "systems/paranormal_inc/templates/item-sheet.html",
+    ...partials
+  ]);
+};
 
-  // Load the template parts
-  return loadTemplates(templatePaths);
+export const registerHandlebarsHelpers = () => {
+  Handlebars.registerHelper("eq", (a, b) => a === b);
+  Handlebars.registerHelper("includes", (arr, v) => Array.isArray(arr) && arr.includes(v));
 };

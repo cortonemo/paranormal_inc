@@ -1,19 +1,29 @@
 {
   "id": "paranormal_inc",
-  "version": "0.0.12",
   "title": "Paranormal Inc",
-  "url": "https://github.com/cortonemo/paranormal_inc/",
-  "description": "A minimalist game system which provides configurable Actor and Item templates to support Paranormal_Inc system game-play.",
-  "license": "LICENSE.txt",
+  "description": "Lightweight system scaffold for Paranormal Inc with archetype-driven character sheet (Scientist included).",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11"
+  },
   "authors": [
     {
-      "name": "Atropos",
-      "url": "https://foundryvtt.com"
+      "name": "Serelith"
     }
   ],
-  "esmodules": ["module/simple.js"],
-  "styles": ["styles/simple.css"],
-  "packs": [],
+  "esmodules": [
+    "module/simple.js",
+    "module/constants.js",
+    "module/templates.js",
+    "module/actor-sheet.js",
+    "module/item-sheet.js",
+    "module/actor.js",
+    "module/item.js"
+  ],
+  "styles": [
+    "styles/simple.css"
+  ],
   "languages": [
     {
       "lang": "en",
@@ -21,21 +31,11 @@
       "path": "lang/en.json"
     },
     {
-      "lang": "pl",
-      "name": "Português",
+      "lang": "pt",
+      "name": "Portugu\u00eas",
       "path": "lang/pt.json"
     }
   ],
-  "compatibility": {
-    "minimum": "10",
-    "verified": "11"
-  },
-  "grid": {
-    "distance": 5,
-    "units": "ft"
-  },
-  "primaryTokenAttribute": "health",
-  "secondaryTokenAttribute": "power",
-  "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/master/system.json",
-  "download": "https://github.com/cortonemo/paranormal_inc/archive/refs/heads/master.zip"
+  "template": "template.json",
+  "packs": []
 }

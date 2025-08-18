@@ -1,3 +1,7 @@
-# Simple Worldbuilding System
+# Paranormal Inc (Foundry VTT System)
+A minimal system with an archetype-driven character sheet.
+- Scientist archetype implemented (moves + personal hauntings)
+- 5 placeholders wired (Medium, Skeptic, Intern, Bookworm, Ghost)
 
-A simple game system for Foundry VTT which allows for flexible definition of Actors and Items to assist with worldbuilding or for running games which do not have a more complete system implementation available.
+## Install
+Place this folder under your Foundry `Data/systems/` as `paranormal_inc`.
