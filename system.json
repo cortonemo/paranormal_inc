@@ -1,30 +1,19 @@
 {
   "id": "paranormal_inc",
-  "title": "Paranormal Inc",
-  "description": "Lightweight system scaffold for Paranormal Inc with archetype-driven character sheet (Scientist included).",
   "version": "0.1.0",
-  "compatibility": {
-    "minimum": "13",
-    "verified": "13"
-  },
+  "title": "Paranormal Inc",
+  "url": "https://github.com/cortonemo/paranormal_inc/",
+  "description": "Lightweight system scaffold for Paranormal Inc with archetype-driven character sheet (Scientist included).",
+  "license": "LICENSE.txt",
   "authors": [
     {
       "name": "Serelith"
       "url": "https://foundryvtt.com"
     }
   ],
-  "esmodules": [
-    "module/simple.js",
-    "module/constants.js",
-    "module/templates.js",
-    "module/actor-sheet.js",
-    "module/item-sheet.js",
-    "module/actor.js",
-    "module/item.js"
-  ],
-  "styles": [
-    "styles/simple.css"
-  ],
+  "esmodules": ["module/simple.js"],
+  "styles": ["styles/simple.css"],
+  "packs": [],
   "languages": [
     {
       "lang": "en",
@@ -37,8 +26,16 @@
       "path": "lang/pt.json"
     }
   ],
-  "template": "template.json",
-  "packs": []
+  "compatibility": {
+    "minimum": "10",
+    "verified": "13"
+  },
+  "grid": {
+    "distance": 5,
+    "units": "ft"
+  },
+  "primaryTokenAttribute": "health",
+  "secondaryTokenAttribute": "power",
   "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/master/system.json",
   "download": "https://github.com/cortonemo/paranormal_inc/archive/refs/heads/master.zip"
 }
