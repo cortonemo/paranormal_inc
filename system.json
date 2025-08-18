@@ -39,6 +39,6 @@
   ],
   "template": "template.json",
   "packs": []
-  "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/cortonemo/paranormal_inc//master/system.json",
+  "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/master/system.json",
   "download": "https://github.com/cortonemo/paranormal_inc/archive/refs/heads/master.zip"
 }
