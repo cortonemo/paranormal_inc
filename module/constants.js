@@ -1,7 +1,10 @@
 
 export const PIN = {archetypes:{
-scientist:{label:"Scientist",partial:"systems/paranormal_inc/templates/archetypes/scientist.html",
-vibeSuggestions:["tidy","disheveled","professional","dated","frazzled","calm","excitable","moody"],
+scientist:{
+	label:"Scientist",
+	partial:"systems/paranormal_inc/templates/archetypes/scientist.html",
+	imageHint: "systems/paranormal_inc/assets/scientist.webp",
+	vibeSuggestions:["tidy","disheveled","professional","dated","frazzled","calm","excitable","moody"],
 moves:[
 {key:"experimentalTech",name:"Experimental Technology",text:"You have a piece of untested technology in your Backpack. Name it, describe what it does, and add it to your Backpack. When you attempt to use the experimental technology, roll +Science. On a 10+, the technology works flawlessly and is not consumed. On a 7–9, the technology works once and then fizzles; mark it as used as normal. On a miss, it breaks; repair only between mysteries with special equipment."},
 {key:"newHypothesis",name:"A New Hypothesis",text:"Once per mystery, when you miss on a Theorize Move, you may suggest a new theory. If the table agrees, you may attempt the Theorize roll a second time without searching for new Clues."},
@@ -14,8 +17,11 @@ hauntings:[
 {key:"labRats",name:"Lab Rats",text:"Scene: you used another Investigator as a test subject without their knowledge."},
 {key:"scrapParts",name:"Scrap Parts",text:"Scene: you disassembled something for parts. Then remove one item from your Backpack."}
 ]},
-bookworm:{label:"Bookworm",partial:"systems/paranormal_inc/templates/archetypes/bookworm.html",
-vibeSuggestions:["nervous","confident","easy-going","quirky","boisterous","colourful","chatty","always online"],
+bookworm:{
+	label:"Bookworm",
+	partial:"systems/paranormal_inc/templates/archetypes/bookworm.html",
+	imageHint: "systems/paranormal_inc/assets/bookworm.webp",
+	vibeSuggestions:["nervous","confident","easy-going","quirky","boisterous","colourful","chatty","always online"],
 moves:[
 {key:"iveReadAboutThis",name:"I've Read About This!",text:"You may take the Handbook of the Recently Deceased Move one additional time."},
 {key:"iknowJustThePerson",name:"I know just the person!",text:"You can call a contact who will help, but it creates a complication described by another player."},
@@ -28,8 +34,11 @@ hauntings:[
 {key:"brokenConnection",name:"Broken Connection",text:"Narrate using someone for info that hurt the relationship; reduce Wits by 1."},
 {key:"knowItAll",name:"Know-It-All",text:"Narrate speaking down to an Investigator; gain 'compulsive explainer'."}
 ]},
-ghost:{label:"Ghost",partial:"systems/paranormal_inc/templates/archetypes/ghost.html",
-vibeSuggestions:["nonplussed","desperate","lonely","absent-minded","joyous","pious","exasperated","ineffable"],
+ghost:{
+	label:"Ghost",
+	partial:"systems/paranormal_inc/templates/archetypes/ghost.html",
+	imageHint: "systems/paranormal_inc/assets/ghost.webp",
+	vibeSuggestions:["nonplussed","desperate","lonely","absent-minded","joyous","pious","exasperated","ineffable"],
 moves:[
 {key:"filledWithRegret",name:"Filled with Regret",text:"Let yourself be possessed; narrate a regret; mark a Personal Haunting to discover a Clue."},
 {key:"bodySwap",name:"Body Swap",text:"Effects of last possession linger; gain 1 extra Special Investigator Move from a playbook not in play."},
@@ -42,8 +51,11 @@ hauntings:[
 {key:"friendsOnOtherSide",name:"Friends on the Other Side",text:"Flashback hanging with other ghosts; how is it different from the team?"},
 {key:"familialHaunting",name:"Familial Haunting",text:"Scene trying to reach loved ones after death; gain 'lonely' (cannot be removed)."}
 ]},
-intern:{label:"Intern",partial:"systems/paranormal_inc/templates/archetypes/intern.html",
-vibeSuggestions:["tired","eager","disinterested","overly friendly","detail-oriented","distracted","accident-prone","suave"],
+intern:{
+	label:"Intern",
+	partial:"systems/paranormal_inc/templates/archetypes/intern.html",
+	imageHint: "systems/paranormal_inc/assets/intern.webp",
+	vibeSuggestions:["tired","eager","disinterested","overly friendly","detail-oriented","distracted","accident-prone","suave"],
 moves:[
 {key:"underAppreciated",name:"Under-appreciated",text:"After seeing your roll result, you can add +1."},
 {key:"coffeeRunner",name:"Coffee runner",text:"Once per turn, take 12+ on a quick-thinking/quick-acting roll."},
@@ -56,8 +68,11 @@ hauntings:[
 {key:"bigShoes",name:"Big Shoes",text:"Scene failing family expectations; gain 'fear of disappointing people' (cannot be removed)."},
 {key:"desperate",name:"Desperate",text:"Scene doing something risky to meet basic needs; remove a Backpack item."}
 ]},
-medium:{label:"Medium",partial:"systems/paranormal_inc/templates/archetypes/medium.html",
-vibeSuggestions:["flighty","grounded","technophobe","mysterious","matter-of-fact","warm","contrarian","haunted"],
+medium:{
+	label:"Medium",	
+	partial:"systems/paranormal_inc/templates/archetypes/medium.html",
+	imageHint: "systems/paranormal_inc/assets/medium.webp",
+	vibeSuggestions:["flighty","grounded","technophobe","mysterious","matter-of-fact","warm","contrarian","haunted"],
 moves:[
 {key:"iSenseAPresence",name:"I Sense a Presence",text:"Announce sensing a presence and draw a card; roll +Intuition: 10+ discover a Clue; 7–9 mark a Personal Haunting then +1 next Discovery."},
 {key:"friendToAll",name:"Friend to All",text:"When you take Ghostly Encounters, choose an additional outcome."},
@@ -70,8 +85,11 @@ hauntings:[
 {key:"aQuietPlace",name:"A Quiet Place",text:"Narrate your last true silence."},
 {key:"senseOfReality",name:"Sense of Reality",text:"Narrate mistaking a ghost for a person; reduce Science by 1."}
 ]},
-skeptic:{label:"Skeptic",partial:"systems/paranormal_inc/templates/archetypes/skeptic.html",
-vibeSuggestions:["put-together","sloppy","passionate","highly caffeinated","know-it-all","fearful","disorganized","steady"],
+skeptic:{
+	label:"Skeptic",
+	partial:"systems/paranormal_inc/templates/archetypes/skeptic.html",
+	imageHint: "systems/paranormal_inc/assets/skeptic.webp",
+	vibeSuggestions:["put-together","sloppy","passionate","highly caffeinated","know-it-all","fearful","disorganized","steady"],
 moves:[
 {key:"reasonInFaceOfDanger",name:"Reason in the Face of Danger",text:"When a Paranormal Event would give you a condition, explain why it can't be true; if players agree, avoid it."},
 {key:"seeingIsntBelieving",name:"Seeing Isn't Believing",text:"Describe how science grounds you; then unmark Personal Hauntings equal to Science +1 (once per mystery)."},

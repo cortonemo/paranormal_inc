@@ -1,33 +1,20 @@
 {
   "Actor": {
-    "types": [
-      "character"
-    ],
+    "types": ["character"],
     "templates": {
       "base": {
         "archetype": "scientist",
         "pronouns": "",
-        "stats": {
-          "science": 0,
-          "wits": 0,
-          "vigour": 0,
-          "intuition": 0
-        },
+        "stats": { "science": 0, "wits": 0, "vigour": 0, "intuition": 0 },
         "vibe": "",
         "backpack": "",
         "conditions": "",
-        "moves": {
-          "selected": []
-        },
-        "hauntings": {},
+        "moves": { "selected": [] },
+        "hauntings": { "marked": [] },
         "biography": "",
         "archetypeImage": ""
       }
     },
-    "character": {
-      "templates": [
-        "base"
-      ]
-    }
+    "character": { "templates": ["base"] }
   }
 }

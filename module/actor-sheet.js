@@ -1,47 +1,81 @@
+// module/actor-sheet.js
 export class PINActorSheet extends ActorSheet {
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       classes: ["paranormal-inc", "sheet", "actor"],
       template: "systems/paranormal_inc/templates/actor-sheet.html",
-      tabs: [{navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook"}]
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }]
     });
   }
+
   async getData(options) {
     const data = await super.getData(options);
     const sys = this.actor.system ?? {};
     sys.archetype ??= "scientist";
     sys.moves ??= { selected: [] };
     sys.stats ??= { science: 0, wits: 0, vigour: 0, intuition: 0 };
-    sys.hauntings ??= {};
+    sys.hauntings ??= { marked: [] };
+
     data.system = sys;
     data.config = CONFIG.PIN;
-    data.arch = CONFIG.PIN.archetypes[sys.archetype] ?? {};
+    data.arch   = CONFIG.PIN.archetypes[sys.archetype] ?? {};
+
+    // Ensure 2 valid, unique selected moves.
+    const avail = (data.arch.moves ?? []).map(m => m.key);
+    let sel = Array.from(new Set((sys.moves.selected ?? []).filter(k => avail.includes(k))));
+    while (sel.length < 2 && avail[sel.length]) {
+      const k = avail[sel.length];
+      if (!sel.includes(k)) sel.push(k); else break;
+    }
+    sys.moves.selected = sel;
+
+    // Map for template lookups (name + text by key)
+    data.arch.moveMap = Object.fromEntries((data.arch.moves ?? []).map(m => [m.key, m]));
+
     data.cssClass = `${data.cssClass ?? ""} arche-${sys.archetype}`;
     return data;
   }
+
   activateListeners(html) {
     super.activateListeners(html);
+
     html.find('[name="system.archetype"]').on("change", async ev => {
-      await this.actor.update({"system.archetype": ev.currentTarget.value});
+      await this.actor.update({ "system.archetype": ev.currentTarget.value });
       this.render(false);
     });
-    html.on("change", ".pin-move-toggle", async ev => {
-      const key = ev.currentTarget.dataset.move;
-      const selected = new Set(this.actor.system.moves?.selected ?? []);
-      const max = 2;
-      if (ev.currentTarget.checked) {
-        if (selected.size >= max) {
-          ui.notifications?.warn(`You can only choose ${max} moves.`);
-          ev.currentTarget.checked = false;
-          return;
-        }
-        selected.add(key);
-      } else selected.delete(key);
-      await this.actor.update({"system.moves.selected": Array.from(selected)});
+
+    // Two dropdowns for moves; keep them different.
+    html.on("change", ".pin-move-select", async ev => {
+      const idx    = Number(ev.currentTarget.dataset.index);
+      const newKey = ev.currentTarget.value;
+      const arch   = CONFIG.PIN.archetypes[this.actor.system.archetype] ?? {};
+      const avail  = (arch.moves ?? []).map(m => m.key);
+
+      let sel = Array.from(this.actor.system.moves?.selected ?? []);
+      if (!avail.includes(newKey)) return;
+
+      sel[idx] = newKey;
+
+      // If both are identical, adjust the other to the first available different.
+      if (sel[0] && sel[1] && sel[0] === sel[1]) {
+        const replacement = avail.find(k => !sel.includes(k)) ?? "";
+        sel[1 - idx] = replacement;
+        ui.notifications?.warn("Moves must be different; adjusted the other slot.");
+      }
+
+      await this.actor.update({ "system.moves.selected": sel });
+      this.render(false);
     });
-    html.on("change", ".pin-haunting", async ev => {
-      const key = ev.currentTarget.dataset.key;
-      await this.actor.update({[`system.hauntings.${key}`]: ev.currentTarget.checked});
+
+    // Multi-select for personal hauntings. Selected = marked.
+    html.on("change", ".pin-hauntings-select", async ev => {
+      const values = Array.from(ev.currentTarget.selectedOptions).map(o => o.value);
+      const arch   = CONFIG.PIN.archetypes[this.actor.system.archetype] ?? {};
+      const updates = { "system.hauntings.marked": values };
+      for (const h of (arch.hauntings ?? [])) {
+        updates[`system.hauntings.${h.key}`] = values.includes(h.key);
+      }
+      await this.actor.update(updates);
     });
   }
 }

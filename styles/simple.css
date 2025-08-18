@@ -1,1 +1,63 @@
-.paranormal-inc.sheet.actor .grid{display:grid;gap:.5rem}.paranormal-inc.sheet.actor .grid.two{grid-template-columns:1fr 1fr}.paranormal-inc.sheet.actor .grid.five{grid-template-columns:repeat(5,minmax(0,1fr))}.paranormal-inc.sheet.actor .stats input{text-align:center}.paranormal-inc.sheet.actor .hauntings{list-style:none;padding:0;margin:0}.paranormal-inc.sheet.actor .hauntings li{margin-bottom:.5rem}
+/* === Grid & Layout === */
+.paranormal-inc.sheet.actor .grid { display: grid; gap: .5rem; }
+.paranormal-inc.sheet.actor .grid.two { grid-template-columns: 1fr 1fr; }
+.paranormal-inc.sheet.actor .grid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.paranormal-inc.sheet.actor .stats input { text-align: center; }
+
+/* Stack columns on small screens */
+@media (max-width: 900px) {
+  .paranormal-inc.sheet.actor .grid.two { grid-template-columns: 1fr; }
+}
+
+/* === Typography & Inputs === */
+.paranormal-inc.sheet.actor label { font-weight: 600; font-size: .9rem; }
+.paranormal-inc.sheet.actor input[type="text"],
+.paranormal-inc.sheet.actor input[type="number"],
+.paranormal-inc.sheet.actor select,
+.paranormal-inc.sheet.actor textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* === Playbook art === */
+.paranormal-inc.sheet.actor .playbook-art { 
+  margin: .5rem 0;
+  border-radius: 8px;
+  overflow: hidden;      /* prevents odd edges on oversized images */
+}
+.paranormal-inc.sheet.actor .playbook-art img { 
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Optional: cap art height while preserving aspect ratio */
+.paranormal-inc.sheet.actor .playbook-art--cap { max-height: 340px; }
+.paranormal-inc.sheet.actor .playbook-art--cap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* === Hauntings === */
+.paranormal-inc.sheet.actor .hauntings { list-style: none; padding: 0; margin: 0; }
+.paranormal-inc.sheet.actor .hauntings li { margin-bottom: .5rem; }
+
+/* Dropdown multi-select (Personal Hauntings) */
+.paranormal-inc.sheet.actor .pin-hauntings-select {
+  width: 100%;
+  min-height: 8rem;
+  padding: .25rem;
+}
+
+/* === Moves tab === */
+.paranormal-inc.sheet.actor .pin-move-select { width: 100%; }
+.paranormal-inc.sheet.actor .chosen-moves { margin-top: .5rem; }
+.paranormal-inc.sheet.actor .chosen-moves ul {
+  list-style: none; padding: 0; margin: .25rem 0 0;
+}
+.paranormal-inc.sheet.actor .chosen-moves li { margin: .25rem 0; }
+
+/* === Minor spacing === */
+.paranormal-inc.sheet.actor .backpack textarea,
+.paranormal-inc.sheet.actor .conditions textarea { min-height: 5rem; }
