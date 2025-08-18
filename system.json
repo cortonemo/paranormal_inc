@@ -4,12 +4,13 @@
   "description": "Lightweight system scaffold for Paranormal Inc with archetype-driven character sheet (Scientist included).",
   "version": "0.1.0",
   "compatibility": {
-    "minimum": "11",
-    "verified": "11"
+    "minimum": "13",
+    "verified": "13"
   },
   "authors": [
     {
       "name": "Serelith"
+      "url": "https://foundryvtt.com"
     }
   ],
   "esmodules": [
@@ -38,4 +39,6 @@
   ],
   "template": "template.json",
   "packs": []
+  "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/cortonemo/paranormal_inc//master/system.json",
+  "download": "https://github.com/cortonemo/paranormal_inc//archive/refs/tags/release-010.zip"
 }
