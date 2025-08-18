@@ -12,7 +12,7 @@
       "url": "https://foundryvtt.com"
     }
   ],
-  "esmodules": "esmodules": ["module/simple.js"],
+  "esmodules": ["module/simple.js"],
   "styles": ["styles/simple.css"],
   "packs": [],
   "languages": [
