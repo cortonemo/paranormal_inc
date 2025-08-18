@@ -36,34 +36,30 @@
   </nav>
 
   <section class="sheet-body">
-    <!-- Page 1: Playbook (left = partial, right = Moves) -->
+    <!-- Page 1 layout (title/art/vibe) + MOVES -->
     <div class="tab" data-group="primary" data-tab="playbook">
-      <section class="grid two playbook-layout">
-        <div class="playbook-left">
-          {{> (lookup (lookup config.archetypes system.archetype) "partial") }}
-        </div>
-        <div class="moves-pane">
-          <h3>Moves</h3>
-          <p class="subtle"><em>Choose up to 2 of the following options:</em></p>
-          <ol class="move-options">
-            {{#each arch.moves as |opt|}}
-              <li class="flexcol">
-                <label class="flexrow">
-                  <input type="checkbox"
-                         class="pin-move-toggle big-check"
-                         data-move="{{opt.key}}"
-                         {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}>
-                  <strong>{{opt.name}}</strong>
-                </label>
-                <div class="move-text">{{opt.text}}</div>
-              </li>
-            {{/each}}
-          </ol>
-        </div>
+      {{> (lookup (lookup config.archetypes system.archetype) "partial") }}
+      <section class="moves-pane">
+        <h3>Moves</h3>
+        <p class="subtle"><em>Choose exactly 2 of the following options:</em></p>
+        <ol class="move-options">
+          {{#each arch.moves as |opt|}}
+            <li class="flexcol">
+              <label class="flexrow">
+                <input type="checkbox"
+                       class="pin-move-toggle big-check"
+                       data-move="{{opt.key}}"
+                       {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}>
+                <strong>{{opt.name}}</strong>
+              </label>
+              <div class="move-text">{{opt.text}}</div>
+            </li>
+          {{/each}}
+        </ol>
       </section>
     </div>
 
-    <!-- Page 2: Backpack/Conditions + Personal Hauntings -->
+    <!-- Page 2 layout (Backpack/Conditions + HAUNTINGS) -->
     <div class="tab" data-group="primary" data-tab="hauntings">
       <section class="grid two">
         <div>
