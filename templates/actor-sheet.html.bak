@@ -1,34 +1,33 @@
 <form class="flexcol {{cssClass}}" autocomplete="off">
-    {{!-- Sheet Header --}} 
-	<header class="sheet-header">
-		<img class="profile-img" src="{{data.img}}" data-edit="img" title="{{data.name}}" height="100" width="100" />
-		<div class="header-fields">
-		  <div class="grid two">
-			<div>
-			  <label data-i18n="PIN.Name">Name</label>
-			  <input type="text" name="name" value="{{actor.name}}" placeholder="Name"/>
-			</div>
-			<div>
-			  <label data-i18n="PIN.Pronouns">Pronouns</label>
-			  <input type="text" name="system.pronouns" value="{{system.pronouns}}" placeholder="they/them"/>
-			</div>
-		  </div>
-		  <div class="grid five stats">
-			<div><label data-i18n="PIN.Science">Science</label><input type="number" name="system.stats.science" value="{{system.stats.science}}"></div>
-			<div><label data-i18n="PIN.Wits">Wits</label><input type="number" name="system.stats.wits" value="{{system.stats.wits}}"></div>
-			<div><label data-i18n="PIN.Vigour">Vigour</label><input type="number" name="system.stats.vigour" value="{{system.stats.vigour}}"></div>
-			<div><label data-i18n="PIN.Intuition">Intuition</label><input type="number" name="system.stats.intuition" value="{{system.stats.intuition}}"></div>
-			<div>
-			  <label data-i18n="PIN.Archetype">Archetype</label>
-			  <select name="system.archetype">
-				{{#each sortedArchetypes as |a|}}
-				  <option value="{{a.key}}" {{#if (eq ../system.archetype a.key)}}selected{{/if}}>{{a.label}}</option>
-				{{/each}}
-			  </select>
-			</div>
-		  </div>
-		</div>
-	</header>
+  <header class="sheet-header">
+    <div class="header-fields">
+      <div class="grid two">
+        <div>
+          <label data-i18n="PIN.Name">Name</label>
+          <input type="text" name="name" value="{{actor.name}}" placeholder="Name"/>
+        </div>
+        <div>
+          <label data-i18n="PIN.Pronouns">Pronouns</label>
+          <input type="text" name="system.pronouns" value="{{system.pronouns}}" placeholder="they/them"/>
+        </div>
+      </div>
+
+      <div class="grid five stats">
+        <div><label data-i18n="PIN.Science">Science</label><input type="number" name="system.stats.science" value="{{system.stats.science}}"></div>
+        <div><label data-i18n="PIN.Wits">Wits</label><input type="number" name="system.stats.wits" value="{{system.stats.wits}}"></div>
+        <div><label data-i18n="PIN.Vigour">Vigour</label><input type="number" name="system.stats.vigour" value="{{system.stats.vigour}}"></div>
+        <div><label data-i18n="PIN.Intuition">Intuition</label><input type="number" name="system.stats.intuition" value="{{system.stats.intuition}}"></div>
+        <div>
+          <label data-i18n="PIN.Archetype">Archetype</label>
+          <select name="system.archetype">
+            {{#each sortedArchetypes as |a|}}
+              <option value="{{a.key}}" {{#if (eq ../system.archetype a.key)}}selected{{/if}}>{{a.label}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
 
   <nav class="sheet-tabs tabs" data-group="primary">
     <a class="item" data-tab="playbook"  data-i18n="PIN.Playbook">Playbook</a>
