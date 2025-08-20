@@ -9,19 +9,5 @@
   "PIN.Playbook": "Playbook",
   "PIN.Moves": "Moves",
   "PIN.Notes": "Notes",
-  "PIN.ChooseTwo": "Choose 2 of the following options:",
-  "PIN.NPC": "NPC",
-  "PIN.Role": "Role",
-  "PIN.Where": "Where to Find",
-  "PIN.Status": "Status",
-  "PIN.StatusNeutral": "Neutral",
-  "PIN.StatusAlly": "Ally",
-  "PIN.StatusHostile": "Hostile",
-  "PIN.StatusMissing": "Missing",
-  "PIN.Look": "Look",
-  "PIN.LookHint": "Comma-separated list; displayed as tags.",
-  "PIN.Quote": "Signature Quote",
-  "PIN.Appearance": "Appearance",
-  "PIN.Connections": "Connections",
-  "PIN.GMNotes": "GM Notes"
+  "PIN.ChooseTwo": "Choose 2 of the following options:"
 }

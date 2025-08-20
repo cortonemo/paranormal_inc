@@ -20,20 +20,16 @@ Hooks.once("init", () => {
   CONFIG.Item.documentClass  = PINItem;
 
   // Register our sheets (PCs + NPCs)
-  try { Actors.unregisterSheet("core", ActorSheet); } catch (e) {}
-  Actors.registerSheet("paranormal_inc", PINActorSheet, {
-    types: ["character", "npc"],
-    makeDefault: true
-  });
+  try { Actors.unregisterSheet("core", ActorSheet); } catch (_) {}
+  Actors.registerSheet("paranormal_inc", PINActorSheet, { types: ["character","npc"], makeDefault: true });
 
-  try { Items.unregisterSheet("core", ItemSheet); } catch (e) {}
+  try { Items.unregisterSheet("core", ItemSheet); } catch (_) {}
   Items.registerSheet("paranormal_inc", PINItemSheet, { makeDefault: true });
 
   console.log("Paranormal Inc | init complete");
 });
 
 Hooks.once("ready", async () => {
-  // Preload core templates and archetype partials
   await preloadHandlebarsTemplates();
   console.log("Paranormal Inc | templates preloaded");
 });

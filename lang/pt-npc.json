@@ -1,0 +1,19 @@
+{
+  "PIN.Name": "Nome",
+  "PIN.Pronouns": "Pronomes",
+  "PIN.Notes": "Notas",
+  "PIN.NPC": "PNJ",
+  "PIN.Role": "Função",
+  "PIN.Where": "Onde Encontrar",
+  "PIN.Status": "Estado",
+  "PIN.StatusNeutral": "Neutro",
+  "PIN.StatusAlly": "Aliado",
+  "PIN.StatusHostile": "Hostil",
+  "PIN.StatusMissing": "Desaparecido",
+  "PIN.Look": "Aparência",
+  "PIN.LookHint": "Lista separada por vírgulas; mostrada como etiquetas.",
+  "PIN.Quote": "Citação",
+  "PIN.Appearance": "Aparência",
+  "PIN.Connections": "Ligações",
+  "PIN.GMNotes": "Notas do DM"
+}

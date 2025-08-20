@@ -1,10 +1,9 @@
-// Paranormal Inc — Actor Sheet (PC + NPC) — HOTFIX
+// Paranormal Inc — Actor Sheet (PC + NPC) — Compatibility Build
 export class PINActorSheet extends ActorSheet {
   static get defaultOptions() {
     const base = super.defaultOptions;
     return foundry.utils.mergeObject(base, {
       classes: ["paranormal-inc", "sheet", "actor"],
-      // default fallback; real selection happens in get template()
       template: `systems/${game.system?.id ?? "paranormal_inc"}/templates/actor-sheet.html`,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }],
       resizable: true,
@@ -13,17 +12,25 @@ export class PINActorSheet extends ActorSheet {
     });
   }
 
-  // Choose the template by actor type using the actual system id
+  // Choose template by actor type
   get template() {
     const base = `systems/${game.system?.id ?? "paranormal_inc"}/templates`;
     return this.actor.type === "npc" ? `${base}/npc-sheet.html` : `${base}/actor-sheet.html`;
   }
 
   async getData(options) {
-    const data = await super.getData(options);
+    const ctx = await super.getData(options);
     const sys = this.actor.system ?? {};
 
-    // NPC normalization
+    // ---- Back-compat aliases for older templates ----
+    // Many v8/v9-era templates used {{data.name}} and {{systemData.*}}.
+    // Provide both without breaking modern {{actor.*}} and {{system.*}}.
+    if (!ctx.data || typeof ctx.data !== "object" || !("img" in ctx.data && "name" in ctx.data)) {
+      ctx.data = this.actor;            // allows {{data.img}} / {{data.name}}
+    }
+    ctx.systemData = ctx.system ?? sys;  // allows {{systemData.health.value}} etc.
+
+    // ---- NPC normalization ----
     if (this.actor.type === "npc") {
       sys.role ??= "";
       sys.look ??= [];
@@ -37,7 +44,7 @@ export class PINActorSheet extends ActorSheet {
       sys.notesGM ??= "";
     }
 
-    // PC normalization & archetype logic
+    // ---- PC normalization & archetype logic ----
     if (this.actor.type !== "npc") {
       sys.archetype ??= "scientist";
       sys.pronouns ??= "";
@@ -51,19 +58,19 @@ export class PINActorSheet extends ActorSheet {
       sys.biography ??= "";
       sys.archetypeImage ??= "";
 
-      data.config = CONFIG.PIN ?? { archetypes: {} };
-      const arch = data.config.archetypes?.[sys.archetype] ?? {};
-      data.arch = arch;
+      ctx.config = CONFIG.PIN ?? { archetypes: {} };
+      const arch = ctx.config.archetypes?.[sys.archetype] ?? {};
+      ctx.arch = arch;
 
-      const entries = Object.entries(data.config.archetypes ?? {});
+      const entries = Object.entries(ctx.config.archetypes ?? {});
       entries.sort(([, a], [, b]) =>
         (a?.label ?? "").localeCompare(b?.label ?? "", game?.i18n?.lang || "en", { sensitivity: "base" })
       );
-      data.sortedArchetypes = entries.map(([key, a]) => ({ key, label: a.label }));
+      ctx.sortedArchetypes = entries.map(([key, a]) => ({ key, label: a.label }));
 
       const availMoveKeys = (arch.moves ?? []).map(m => m.key);
       sys.moves.selected = Array.from(new Set((sys.moves.selected ?? []).filter(k => availMoveKeys.includes(k)))).slice(0, 2);
-      data.arch.moveMap = Object.fromEntries((arch.moves ?? []).map(m => [m.key, m]));
+      ctx.arch.moveMap = Object.fromEntries((arch.moves ?? []).map(m => [m.key, m]));
 
       const availHauntingKeys = (arch.hauntings ?? []).map(h => h.key);
       sys.hauntings.marked = (sys.hauntings.marked ?? []).filter(k => availHauntingKeys.includes(k));
@@ -77,7 +84,12 @@ export class PINActorSheet extends ActorSheet {
       }
     }
 
-    data.system = sys;
-    return data;
+    ctx.system = sys;
+    return ctx;
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    // Keep or add PC-only listeners here as needed.
   }
 }
