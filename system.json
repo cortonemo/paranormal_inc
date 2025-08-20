@@ -1,7 +1,7 @@
 {
   "id": "paranormal_inc",
   "title": "Paranormal Inc",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "description": "Archetype-driven character & NPC sheets for the Paranormal Inc system.",
   "url": "https://github.com/cortonemo/paranormal_inc/",
   "license": "LICENSE.txt",
@@ -26,7 +26,18 @@
   },
 
   "grid": { "distance": 5, "units": "ft" },
-
+	"media": [
+			{
+				"type": "cover",
+				"loop": false,
+				"flags": {}
+			},
+			{
+				"type": "setup",
+				"url": "systems/paranormal_inc/assets/Paranormal_Inc.png",
+				"thumbnail": "systems/paranormal_inc/assets/Paranormal_Inc_thumb.png"
+			}
+		],
   "manifest": "https://raw.githubusercontent.com/cortonemo/paranormal_inc/master/system.json",
   "download": "https://github.com/cortonemo/paranormal_inc/archive/refs/heads/master.zip"
 }
