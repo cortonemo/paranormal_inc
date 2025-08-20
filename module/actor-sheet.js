@@ -14,7 +14,7 @@ export class PINActorSheet extends ActorSheet {
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }],
       resizable: true,
       width:  720,
-      height: 800
+      height: 810 // +5% taller
     });
   }
 
