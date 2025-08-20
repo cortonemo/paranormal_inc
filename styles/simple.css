@@ -3,6 +3,8 @@
    Layout + styling for the character/NPC sheets.
    ======================================================================= */
 
+@import "./tag-chips.css";
+
 /* === Grid & layout helpers === */
 .paranormal-inc.sheet.actor .grid { display: grid; gap: .5rem; }
 .paranormal-inc.sheet.actor .grid.two { grid-template-columns: 1fr 1fr; }

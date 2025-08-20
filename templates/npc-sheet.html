@@ -1,0 +1,72 @@
+<form class="flexcol {{cssClass}}" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100"/>
+    <div class="header-fields">
+      <div class="grid two">
+        <div>
+          <label data-i18n="PIN.Name">Name</label>
+          <input type="text" name="name" value="{{actor.name}}" placeholder="Name"/>
+        </div>
+        <div>
+          <label data-i18n="PIN.Pronouns">Pronouns</label>
+          <input type="text" name="system.pronouns" value="{{system.pronouns}}" placeholder="they/them"/>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div>
+          <label data-i18n="PIN.Role">Role / Title</label>
+          <input type="text" name="system.role" value="{{system.role}}" placeholder="Curator, Owner, Security, etc."/>
+        </div>
+        <div>
+          <label data-i18n="PIN.Where">Where to Find</label>
+          <input type="text" name="system.where" value="{{system.where}}" placeholder="Whaling Museum, Snowdrop House, around town"/>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div>
+          <label data-i18n="PIN.Status">Status</label>
+          <select name="system.status">
+            <option value="neutral" {{#if (eq system.status "neutral")}}selected{{/if}} data-i18n="PIN.StatusNeutral">Neutral</option>
+            <option value="ally"    {{#if (eq system.status "ally")}}selected{{/if}}    data-i18n="PIN.StatusAlly">Ally</option>
+            <option value="hostile" {{#if (eq system.status "hostile")}}selected{{/if}} data-i18n="PIN.StatusHostile">Hostile</option>
+            <option value="missing" {{#if (eq system.status "missing")}}selected{{/if}} data-i18n="PIN.StatusMissing">Missing</option>
+          </select>
+        </div>
+        <div>
+          <label data-i18n="PIN.Look">Look (comma-separated)</label>
+          <input type="text" name="system.lookCsv" value="{{join system.look ", "}}" placeholder="anxious, comb-over, ill-fitting suit"/>
+          <div class="subtle"><small data-i18n="PIN.LookHint">Displayed as tags below.</small></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="npc" data-i18n="PIN.NPC">NPC</a>
+    <a class="item" data-tab="notes" data-i18n="PIN.Notes">Notes</a>
+  </nav>
+
+  <section class="sheet-body">
+    <div class="tab" data-group="primary" data-tab="npc">
+      <h2 data-i18n="PIN.Quote">Signature Quote</h2>
+      <textarea name="system.quote" style="min-height:4.2rem" placeholder="Short quote">{{system.quote}}</textarea>
+
+      <h3 data-i18n="PIN.Appearance">Appearance</h3>
+      <ul class="tags">
+        {{#each system.look as |tag|}}<li class="tag">{{tag}}</li>{{/each}}
+      </ul>
+
+      <h3 data-i18n="PIN.Connections">Connections</h3>
+      <textarea name="system.connections" placeholder="Names, ties, leverage — freeform array via comma">{{join system.connections ", "}}</textarea>
+
+      <h3 data-i18n="PIN.GMNotes">GM Notes</h3>
+      <textarea name="system.notesGM" style="min-height:6rem">{{system.notesGM}}</textarea>
+    </div>
+
+    <div class="tab" data-group="primary" data-tab="notes">
+      {{editor system.biography target="system.biography" button=true editable=editable engine="prosemirror"}}
+    </div>
+  </section>
+</form>

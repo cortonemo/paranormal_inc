@@ -5,38 +5,26 @@
       "base": {
         "archetype": "scientist",
         "pronouns": "",
-        "stats": {
-          "science": 0,
-          "wits": 0,
-          "vigour": 0,
-          "intuition": 0
-        },
+        "stats": { "science": 0, "wits": 0, "vigour": 0, "intuition": 0 },
         "vibe": "",
         "backpack": "",
         "conditions": "",
-        "moves": {
-          "selected": []
-        },
-        "hauntings": {
-          "marked": []
-        },
+        "moves": { "selected": [] },
+        "hauntings": { "marked": [] },
         "biography": "",
         "archetypeImage": ""
       }
     },
     "character": { "templates": ["base"] },
-    "npc":       { "templates": ["base"] }
-  },
-
-  "Item": {
-    "types": ["gear", "ability", "misc"],
-    "templates": {
-      "base": {
-        "description": ""
-      }
-    },
-    "gear":    { "templates": ["base"] },
-    "ability": { "templates": ["base"] },
-    "misc":    { "templates": ["base"] }
+    "npc": {
+      "templates": ["base"],
+      "role": "",
+      "look": [],
+      "quote": "",
+      "where": "",
+      "status": "neutral",
+      "connections": [],
+      "notesGM": ""
+    }
   }
 }

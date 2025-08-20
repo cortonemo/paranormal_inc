@@ -1,0 +1,2 @@
+.paranormal-inc.sheet.actor ul.tags { list-style: none; padding: 0; margin: .25rem 0 0; display: flex; flex-wrap: wrap; gap: .25rem; }
+.paranormal-inc.sheet.actor ul.tags .tag { padding: .1rem .4rem; border-radius: .5rem; border: 1px solid rgba(0,0,0,.15); font-size: .85rem; }

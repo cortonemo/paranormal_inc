@@ -1,0 +1,647 @@
+this is a game system for Paranormal inc
+the folder structure is as follow
+📁 Root: paranormal_inc
+├── 📂 assets/
+│   ├── 📄 bookworm.webp
+│   ├── 📄 ghost.webp
+│   ├── 📄 intern.webp
+│   ├── 📄 medium.webp
+│   ├── 📄 scientist.webp
+│   └── 📄 skeptic.webp
+├── 📂 lang/
+│   ├── 📄 en.json
+│   └── 📄 pt.json
+├── 📂 module/
+│   ├── 📄 actor-sheet.js
+│   ├── 📄 actor.js
+│   ├── 📄 constants.js
+│   ├── 📄 helper.js
+│   ├── 📄 item-sheet.js
+│   ├── 📄 item.js
+│   ├── 📄 macro.js
+│   ├── 📄 simple.js
+│   ├── 📄 templates.js
+│   └── 📄 token.js
+├── 📂 styles/
+│   ├── 📄 simple.css
+│   └── 📄 simple.less
+├── 📂 templates/
+│   ├── 📂 archetypes/
+│   │   ├── 📄 bookworm.html
+│   │   ├── 📄 ghost.html
+│   │   ├── 📄 intern.html
+│   │   ├── 📄 medium.html
+│   │   ├── 📄 scientist.html
+│   │   └── 📄 skeptic.html
+│   ├── 📂 parts/
+│   │   ├── 📄 sheet-attributes.html
+│   │   └── 📄 sheet-groups.html
+│   ├── 📄 actor-sheet.html
+│   ├── 📄 actor-sheet.html.bak
+│   └── 📄 item-sheet.html
+├── 📄 .gitignore
+├── 📄 gulpfile.js
+├── 📄 LICENSE.txt
+├── 📄 package.json
+├── 📄 README.md
+├── 📄 system.json
+└── 📄 template.json
+
+content of each file
+pt.json:
+{
+  "PIN.Name": "Nome",
+  "PIN.Pronouns": "Pronomes",
+  "PIN.Science": "Ci\u00eancia",
+  "PIN.Wits": "Ast\u00facia",
+  "PIN.Vigour": "Vigor",
+  "PIN.Intuition": "Intui\u00e7\u00e3o",
+  "PIN.Archetype": "Arqu\u00e9tipo",
+  "PIN.Playbook": "Playbook",
+  "PIN.Moves": "Movimentos",
+  "PIN.Notes": "Notas",
+  "PIN.ChooseTwo": "Escolhe 2 das seguintes op\u00e7\u00f5es:"
+}
+
+actor.js: 
+export class PINActor extends Actor{}
+
+actor-sheet.js:
+// module/actor-sheet.js
+// Paranormal Inc — Actor Sheet
+// - Archetype dropdown (alphabetical)
+// - Moves: 0–2 selected, free tick/untick
+// - Personal Hauntings: independent checkboxes
+// - +5% taller default sheet window
+
+export class PINActorSheet extends ActorSheet {
+  static get defaultOptions() {
+    const base = super.defaultOptions;
+    return foundry.utils.mergeObject(base, {
+      classes: ["paranormal-inc", "sheet", "actor"],
+      template: "systems/paranormal_inc/templates/actor-sheet.html",
+      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }],
+      resizable: true,
+      width:  720,
+      height: 810 // +5% taller
+    });
+  }
+
+  /** @override */
+  async getData(options) {
+    const data = await super.getData(options);
+
+    // Stable system shape
+    const sys = this.actor.system ?? {};
+    sys.archetype ??= "scientist";
+    sys.pronouns ??= "";
+    sys.stats ??= { science: 0, wits: 0, vigour: 0, intuition: 0 };
+    sys.vibe ??= "";
+    sys.backpack ??= "";
+    sys.conditions ??= "";
+    sys.moves ??= { selected: [] }; // string[]
+    sys.hauntings ??= {};           // { [key]: boolean, marked: string[] }
+    sys.hauntings.marked ??= [];
+    sys.biography ??= "";
+    sys.archetypeImage ??= "";
+
+    data.system = sys;
+    data.config = CONFIG.PIN ?? { archetypes: {} };
+
+    // Current archetype config
+    const arch = data.config.archetypes[sys.archetype] ?? {};
+    data.arch = arch;
+
+    // Sorted archetype list for the dropdown
+    const entries = Object.entries(data.config.archetypes);
+    entries.sort(([, a], [, b]) =>
+      (a?.label ?? "").localeCompare(b?.label ?? "", game?.i18n?.lang || "en", { sensitivity: "base" })
+    );
+    data.sortedArchetypes = entries.map(([key, a]) => ({ key, label: a.label }));
+
+    // ---- Moves: keep valid & unique, cap at 2 (no auto-fill) --------------
+    const availMoveKeys = (arch.moves ?? []).map(m => m.key);
+    sys.moves.selected = Array.from(
+      new Set((sys.moves.selected ?? []).filter(k => availMoveKeys.includes(k)))
+    ).slice(0, 2);
+
+    // Lookup map for template
+    data.arch.moveMap = Object.fromEntries((arch.moves ?? []).map(m => [m.key, m]));
+
+    // ---- Hauntings: normalize booleans + "marked" array -------------------
+    const availHauntingKeys = (arch.hauntings ?? []).map(h => h.key);
+    sys.hauntings.marked = (sys.hauntings.marked ?? []).filter(k => availHauntingKeys.includes(k));
+
+    for (const k of availHauntingKeys) {
+      if (typeof sys.hauntings[k] !== "boolean") sys.hauntings[k] = false;
+      if (sys.hauntings[k] && !sys.hauntings.marked.includes(k)) sys.hauntings.marked.push(k);
+      if (!sys.hauntings[k] && sys.hauntings.marked.includes(k)) {
+        sys.hauntings.marked = sys.hauntings.marked.filter(x => x !== k);
+      }
+    }
+    for (const k of Object.keys(sys.hauntings)) {
+      if (k === "marked") continue;
+      if (!availHauntingKeys.includes(k)) delete sys.hauntings[k];
+    }
+
+    data.cssClass = `${data.cssClass ?? ""} arche-${sys.archetype}`;
+    return data;
+  }
+
+  /** @override */
+  activateListeners(html) {
+    super.activateListeners(html);
+
+    // Archetype change: reset moves to none; clear hauntings
+    html.find('[name="system.archetype"]').on("change", async (ev) => {
+      const newArchKey = ev.currentTarget.value;
+      const newArch = CONFIG.PIN.archetypes[newArchKey] ?? { moves: [], hauntings: [] };
+
+      const updates = {
+        "system.archetype": newArchKey,
+        "system.moves.selected": []   // start with none selected again
+      };
+
+      updates["system.hauntings"] = { marked: [] };
+      for (const h of (newArch.hauntings ?? [])) updates[`system.hauntings.${h.key}`] = false;
+
+      await this.actor.update(updates);
+      this.render(false);
+    });
+
+    // Moves: up to 2 selected; allow uncheck any time
+    html.on("change", ".pin-move-toggle", async (ev) => {
+      const key = ev.currentTarget.dataset.move;
+      const selected = new Set(this.actor.system.moves?.selected ?? []);
+      const MAX = 2;
+
+      if (ev.currentTarget.checked) {
+        if (selected.size >= MAX) {
+          ui.notifications?.warn(`You can select up to ${MAX} moves.`);
+          ev.currentTarget.checked = false;
+          return;
+        }
+        selected.add(key);
+      } else {
+        selected.delete(key); // no minimum
+      }
+
+      await this.actor.update({ "system.moves.selected": Array.from(selected) });
+      this.render(false);
+    });
+
+    // Personal Hauntings: independent checkboxes
+    html.on("change", ".pin-haunting", async (ev) => {
+      const key = ev.currentTarget.dataset.key;
+      const checked = ev.currentTarget.checked;
+
+      const marked = new Set(this.actor.system.hauntings?.marked ?? []);
+      if (checked) marked.add(key); else marked.delete(key);
+
+      await this.actor.update({
+        [`system.hauntings.${key}`]: checked,
+        "system.hauntings.marked": Array.from(marked)
+      });
+    });
+  }
+}
+
+constants.js:
+
+export const PIN = {archetypes:{
+scientist:{
+	label:"Scientist",
+	partial:"systems/paranormal_inc/templates/archetypes/scientist.html",
+	imageHint: "systems/paranormal_inc/assets/scientist.webp",
+	vibeSuggestions:["tidy","disheveled","professional","dated","frazzled","calm","excitable","moody"],
+moves:[
+{key:"experimentalTech",name:"Experimental Technology",text:"You have a piece of untested technology in your Backpack. Name it, describe what it does, and add it to your Backpack. When you attempt to use the experimental technology, roll +Science. On a 10+, the technology works flawlessly and is not consumed. On a 7–9, the technology works once and then fizzles; mark it as used as normal. On a miss, it breaks; repair only between mysteries with special equipment."},
+{key:"newHypothesis",name:"A New Hypothesis",text:"Once per mystery, when you miss on a Theorize Move, you may suggest a new theory. If the table agrees, you may attempt the Theorize roll a second time without searching for new Clues."},
+{key:"ghostbuster",name:"Ghostbuster",text:"Ghosts are terrified of you and your machines. Once per mystery, when you do the Discovery Move in the presence of a ghost, you may find an additional Clue, even on a miss."}
+],
+hauntings:[
+{key:"failedExperiment",name:"Failed Experiment",text:"Gain the condition 'fear of failure'. It cannot be removed."},
+{key:"obsessedWithScience",name:"Obsessed with Science",text:"Flashback: how did you first become interested in proving/disproving ghosts?"},
+{key:"sellOut",name:"Sell-out",text:"Flashback: a corporation wooed you. What did they offer and what did you give up? Gain the condition 'untrustworthy'."},
+{key:"labRats",name:"Lab Rats",text:"Scene: you used another Investigator as a test subject without their knowledge."},
+{key:"scrapParts",name:"Scrap Parts",text:"Scene: you disassembled something for parts. Then remove one item from your Backpack."}
+]},
+bookworm:{
+	label:"Bookworm",
+	partial:"systems/paranormal_inc/templates/archetypes/bookworm.html",
+	imageHint: "systems/paranormal_inc/assets/bookworm.webp",
+	vibeSuggestions:["nervous","confident","easy-going","quirky","boisterous","colourful","chatty","always online"],
+moves:[
+{key:"iveReadAboutThis",name:"I've Read About This!",text:"You may take the Handbook of the Recently Deceased Move one additional time."},
+{key:"iknowJustThePerson",name:"I know just the person!",text:"You can call a contact who will help, but it creates a complication described by another player."},
+{key:"hacker",name:"Hacker",text:"For rolls related to computers, roll with advantage."}
+],
+hauntings:[
+{key:"theUnknown",name:"The Unknown",text:"Narrate a time you didn't have the answer."},
+{key:"geekedOut",name:"Geeked Out",text:"Narrate a time you were mocked for being smart; then +1 a relevant stat (max +2)."},
+{key:"opposingTheories",name:"Opposing theories",text:"Gain condition 'plagued by indecision' (cannot be removed)."},
+{key:"brokenConnection",name:"Broken Connection",text:"Narrate using someone for info that hurt the relationship; reduce Wits by 1."},
+{key:"knowItAll",name:"Know-It-All",text:"Narrate speaking down to an Investigator; gain 'compulsive explainer'."}
+]},
+ghost:{
+	label:"Ghost",
+	partial:"systems/paranormal_inc/templates/archetypes/ghost.html",
+	imageHint: "systems/paranormal_inc/assets/ghost.webp",
+	vibeSuggestions:["nonplussed","desperate","lonely","absent-minded","joyous","pious","exasperated","ineffable"],
+moves:[
+{key:"filledWithRegret",name:"Filled with Regret",text:"Let yourself be possessed; narrate a regret; mark a Personal Haunting to discover a Clue."},
+{key:"bodySwap",name:"Body Swap",text:"Effects of last possession linger; gain 1 extra Special Investigator Move from a playbook not in play."},
+{key:"ghostlyVisage",name:"Ghostly Visage",text:"Change your appearance; when beneficial, roll with advantage."}
+],
+hauntings:[
+{key:"memoriesOfDeath",name:"Memories of Death",text:"Flashback your death; reduce Wits by 1."},
+{key:"hijacked",name:"Hijacked",text:"Flashback the first time you possessed someone without consent."},
+{key:"absorbMemories",name:"Absorb Memories",text:"Touch an item and narrate a Scene it witnessed; +1 Intuition."},
+{key:"friendsOnOtherSide",name:"Friends on the Other Side",text:"Flashback hanging with other ghosts; how is it different from the team?"},
+{key:"familialHaunting",name:"Familial Haunting",text:"Scene trying to reach loved ones after death; gain 'lonely' (cannot be removed)."}
+]},
+intern:{
+	label:"Intern",
+	partial:"systems/paranormal_inc/templates/archetypes/intern.html",
+	imageHint: "systems/paranormal_inc/assets/intern.webp",
+	vibeSuggestions:["tired","eager","disinterested","overly friendly","detail-oriented","distracted","accident-prone","suave"],
+moves:[
+{key:"underAppreciated",name:"Under-appreciated",text:"After seeing your roll result, you can add +1."},
+{key:"coffeeRunner",name:"Coffee runner",text:"Once per turn, take 12+ on a quick-thinking/quick-acting roll."},
+{key:"collector",name:"Collector",text:"Choose any three items and add them to your Backpack."}
+],
+hauntings:[
+{key:"sacrificed",name:"Sacrificed",text:"Narrate the team risking you; +1 Wits."},
+{key:"lifeGoals",name:"Life Goals",text:"Scene: why did you choose an internship at Paranormal Inc?"},
+{key:"invisible",name:"Invisible",text:"Narrate being ignored; gain 'self-doubt'."},
+{key:"bigShoes",name:"Big Shoes",text:"Scene failing family expectations; gain 'fear of disappointing people' (cannot be removed)."},
+{key:"desperate",name:"Desperate",text:"Scene doing something risky to meet basic needs; remove a Backpack item."}
+]},
+medium:{
+	label:"Medium",	
+	partial:"systems/paranormal_inc/templates/archetypes/medium.html",
+	imageHint: "systems/paranormal_inc/assets/medium.webp",
+	vibeSuggestions:["flighty","grounded","technophobe","mysterious","matter-of-fact","warm","contrarian","haunted"],
+moves:[
+{key:"iSenseAPresence",name:"I Sense a Presence",text:"Announce sensing a presence and draw a card; roll +Intuition: 10+ discover a Clue; 7–9 mark a Personal Haunting then +1 next Discovery."},
+{key:"friendToAll",name:"Friend to All",text:"When you take Ghostly Encounters, choose an additional outcome."},
+{key:"toolsOfTheTrade",name:"Tools of the Trade",text:"Add your divination tool to your Backpack; when used for advantage, don't mark it off."}
+],
+hauntings:[
+{key:"ghostTherapist",name:"Ghost Therapist",text:"Describe constant haunting; reduce Wits by 1."},
+{key:"premonitionsOfDeath",name:"Premonitions of Death",text:"Narrate premonitions; gain 'risk-averse'."},
+{key:"newTalents",name:"New Talents",text:"Narrate a new sporadic ability; +1 Intuition (no max)."},
+{key:"aQuietPlace",name:"A Quiet Place",text:"Narrate your last true silence."},
+{key:"senseOfReality",name:"Sense of Reality",text:"Narrate mistaking a ghost for a person; reduce Science by 1."}
+]},
+skeptic:{
+	label:"Skeptic",
+	partial:"systems/paranormal_inc/templates/archetypes/skeptic.html",
+	imageHint: "systems/paranormal_inc/assets/skeptic.webp",
+	vibeSuggestions:["put-together","sloppy","passionate","highly caffeinated","know-it-all","fearful","disorganized","steady"],
+moves:[
+{key:"reasonInFaceOfDanger",name:"Reason in the Face of Danger",text:"When a Paranormal Event would give you a condition, explain why it can't be true; if players agree, avoid it."},
+{key:"seeingIsntBelieving",name:"Seeing Isn't Believing",text:"Describe how science grounds you; then unmark Personal Hauntings equal to Science +1 (once per mystery)."},
+{key:"documentarian",name:"Documentarian",text:"Add a recorder/camera to Backpack; once per mystery, on an ally miss, playback turns it into a 12 (narrate what really happened)."}],
+hauntings:[
+{key:"longLost",name:"Long Lost",text:"Flashback trying to reach a loved one who never returned."},
+{key:"delusional",name:"Delusional",text:"Gain 'head in the sand'."},
+{key:"suspicious",name:"Suspicious",text:"Suspicion put someone at risk; -1 Wits."},
+{key:"questionOfFaith",name:"A Question of Faith",text:"Reason failed you; add a token to Backpack."},
+{key:"theFiveSenses",name:"The 5 Senses",text:"Narrate doubting your senses; what still lingers?"}
+]}
+}};
+
+helper.js:
+// helper placeholder
+
+item.js:
+export class PINItem extends Item{}
+
+item-sheet.js:
+export class PINItemSheet extends ItemSheet{static get defaultOptions(){return foundry.utils.mergeObject(super.defaultOptions,{classes:["paranormal-inc","sheet","item"],template:"systems/paranormal_inc/templates/item-sheet.html"});}}
+
+macro.js:
+// macro placeholder
+
+simple.js:
+// module/simple.js
+// Paranormal Inc — system bootstrap
+
+import { preloadHandlebarsTemplates, registerHandlebarsHelpers } from "./templates.js";
+import { PIN } from "./constants.js";
+import { PINActorSheet } from "./actor-sheet.js";
+import { PINItemSheet } from "./item-sheet.js";
+import { PINActor } from "./actor.js";
+import { PINItem } from "./item.js";
+
+Hooks.once("init", function () {
+  // Expose config
+  CONFIG.PIN = PIN;
+
+  // Handlebars helpers + preload templates/partials
+  registerHandlebarsHelpers();
+  preloadHandlebarsTemplates();
+
+  // Use custom document classes
+  CONFIG.Actor.documentClass = PINActor;
+  CONFIG.Item.documentClass  = PINItem;
+
+  // Register our sheets (for both PCs and NPCs)
+  try { Actors.unregisterSheet("core", ActorSheet); } catch (e) {}
+  Actors.registerSheet("paranormal_inc", PINActorSheet, {
+    types: ["character", "npc"],
+    makeDefault: true
+  });
+
+  try { Items.unregisterSheet("core", ItemSheet); } catch (e) {}
+  Items.registerSheet("paranormal_inc", PINItemSheet, { makeDefault: true });
+
+  console.log("Paranormal Inc | System initialized");
+});
+
+
+templates.js:
+import { PIN } from "./constants.js";
+export const preloadHandlebarsTemplates = async () => {
+  const partials = Object.values(PIN.archetypes).map(a => a.partial);
+  return loadTemplates([
+    "systems/paranormal_inc/templates/actor-sheet.html",
+    "systems/paranormal_inc/templates/item-sheet.html",
+    ...partials
+  ]);
+};
+export const registerHandlebarsHelpers = () => {
+  Handlebars.registerHelper("eq", (a,b)=>a===b);
+  Handlebars.registerHelper("includes", (arr,v)=>Array.isArray(arr)&&arr.includes(v));
+};
+
+token.js:
+// token placeholder
+
+simple.css:
+/* =======================================================================
+   Paranormal Inc — simple.css
+   Layout + styling for the character/NPC sheets.
+   ======================================================================= */
+
+/* === Grid & layout helpers === */
+.paranormal-inc.sheet.actor .grid { display: grid; gap: .5rem; }
+.paranormal-inc.sheet.actor .grid.two { grid-template-columns: 1fr 1fr; }
+.paranormal-inc.sheet.actor .grid.five { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+
+/* Stats inputs centered */
+.paranormal-inc.sheet.actor .stats input { text-align: center; }
+
+/* Playbook page: 2-column layout matching the print sheet (art/vibe + moves) */
+.paranormal-inc.sheet.actor .playbook-layout { grid-template-columns: 7fr 9fr; align-items: start; }
+
+/* Stack columns on small screens */
+@media (max-width: 900px) {
+  .paranormal-inc.sheet.actor .grid.two { grid-template-columns: 1fr; }
+  .paranormal-inc.sheet.actor .playbook-layout { grid-template-columns: 1fr; }
+}
+
+/* === Typography & Inputs === */
+.paranormal-inc.sheet.actor label { font-weight: 600; font-size: .9rem; }
+.paranormal-inc.sheet.actor h2 { font-size: 1.6rem; margin: .25rem 0 .25rem; letter-spacing: .02em; }
+.paranormal-inc.sheet.actor h3 { margin: .5rem 0 .25rem; border-bottom: 2px solid rgba(0,0,0,.18); }
+.paranormal-inc.sheet.actor .tagline { margin: 0 0 .5rem; color: #444; font-style: italic; }
+
+.paranormal-inc.sheet.actor input[type="text"],
+.paranormal-inc.sheet.actor input[type="number"],
+.paranormal-inc.sheet.actor select,
+.paranormal-inc.sheet.actor textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* === Playbook art — fixed viewport so it never overwhelms === */
+.paranormal-inc.sheet.actor .playbook-art {
+  height: 220px;                /* Adjust to taste (200–260px works well) */
+  margin: .5rem 0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.paranormal-inc.sheet.actor .playbook-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;           /* show whole image without cropping */
+  display: block;
+}
+
+/* === Lined textareas to mimic the print sheets === */
+.paranormal-inc.sheet.actor textarea.lined {
+  line-height: 1.6rem;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0,
+    rgba(0,0,0,0) 1.3rem,
+    rgba(0,0,0,.12) 1.31rem,
+    rgba(0,0,0,.12) 1.33rem
+  );
+}
+
+/* === Big checkboxes (moves & personal hauntings) === */
+.paranormal-inc.sheet.actor .big-check {
+  transform: scale(1.25);
+  margin-right: .5rem;
+}
+
+/* === Moves (right column of Playbook page) === */
+.paranormal-inc.sheet.actor .moves-pane .move-options {
+  list-style: none;
+  padding: 0;
+  margin: .25rem 0 0;
+}
+.paranormal-inc.sheet.actor .moves-pane .move-options li { margin-bottom: .6rem; }
+.paranormal-inc.sheet.actor .subtle { color: #444; }
+
+/* === Personal Hauntings (right column of Hauntings page) === */
+.paranormal-inc.sheet.actor .hauntings { list-style: none; padding: 0; margin: 0; }
+.paranormal-inc.sheet.actor .hauntings li { margin-bottom: .6rem; }
+.paranormal-inc.sheet.actor .hauntings .hint { margin-left: 1.9rem; color: #333; }
+
+/* === Minor spacing for Backpack/Conditions === */
+.paranormal-inc.sheet.actor .backpack textarea,
+.paranormal-inc.sheet.actor .conditions textarea { min-height: 5rem; }
+
+
+simple.less:
+/* optional less file */
+
+actpr-sheet.html:
+<form class="flexcol {{cssClass}}" autocomplete="off">
+    {{!-- Sheet Header --}} 
+	<header class="sheet-header">
+		<img class="profile-img" src="{{data.img}}" data-edit="img" title="{{data.name}}" height="100" width="100" />
+		<div class="header-fields">
+		  <div class="grid two">
+			<div>
+			  <label data-i18n="PIN.Name">Name</label>
+			  <input type="text" name="name" value="{{actor.name}}" placeholder="Name"/>
+			</div>
+			<div>
+			  <label data-i18n="PIN.Pronouns">Pronouns</label>
+			  <input type="text" name="system.pronouns" value="{{system.pronouns}}" placeholder="they/them"/>
+			</div>
+		  </div>
+		  <div class="grid five stats">
+			<div><label data-i18n="PIN.Science">Science</label><input type="number" name="system.stats.science" value="{{system.stats.science}}"></div>
+			<div><label data-i18n="PIN.Wits">Wits</label><input type="number" name="system.stats.wits" value="{{system.stats.wits}}"></div>
+			<div><label data-i18n="PIN.Vigour">Vigour</label><input type="number" name="system.stats.vigour" value="{{system.stats.vigour}}"></div>
+			<div><label data-i18n="PIN.Intuition">Intuition</label><input type="number" name="system.stats.intuition" value="{{system.stats.intuition}}"></div>
+			<div>
+			  <label data-i18n="PIN.Archetype">Archetype</label>
+			  <select name="system.archetype">
+				{{#each sortedArchetypes as |a|}}
+				  <option value="{{a.key}}" {{#if (eq ../system.archetype a.key)}}selected{{/if}}>{{a.label}}</option>
+				{{/each}}
+			  </select>
+			</div>
+		  </div>
+		</div>
+	</header>
+
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="playbook"  data-i18n="PIN.Playbook">Playbook</a>
+    <a class="item" data-tab="hauntings">Personal Hauntings</a>
+    <a class="item" data-tab="notes"     data-i18n="PIN.Notes">Notes</a>
+  </nav>
+
+  <section class="sheet-body">
+    <!-- Page 1 layout (title/art/vibe) + MOVES -->
+    <div class="tab" data-group="primary" data-tab="playbook">
+      {{> (lookup (lookup config.archetypes system.archetype) "partial") }}
+      <section class="moves-pane">
+        <h3>Moves</h3>
+        <p class="subtle"><em>Choose exactly 2 of the following options:</em></p>
+        <ol class="move-options">
+          {{#each arch.moves as |opt|}}
+            <li class="flexcol">
+              <label class="flexrow">
+                <input type="checkbox"
+                       class="pin-move-toggle big-check"
+                       data-move="{{opt.key}}"
+                       {{#if (includes ../system.moves.selected opt.key)}}checked{{/if}}>
+                <strong>{{opt.name}}</strong>
+              </label>
+              <div class="move-text">{{opt.text}}</div>
+            </li>
+          {{/each}}
+        </ol>
+      </section>
+    </div>
+
+    <!-- Page 2 layout (Backpack/Conditions + HAUNTINGS) -->
+    <div class="tab" data-group="primary" data-tab="hauntings">
+      <section class="grid two">
+        <div>
+          <h3>Backpack</h3>
+          <textarea class="lined" name="system.backpack" rows="10" placeholder="One item per line">{{system.backpack}}</textarea>
+          <h3>Conditions</h3>
+          <textarea class="lined" name="system.conditions" rows="6" placeholder="Condition list">{{system.conditions}}</textarea>
+        </div>
+        <div>
+          <h3>Personal Hauntings</h3>
+          <p class="subtle">Mark in any order. When you mark a new one, follow its instruction.</p>
+          <ul class="hauntings">
+            {{#each arch.hauntings as |h|}}
+              <li>
+                <label class="flexrow">
+                  <input type="checkbox" class="pin-haunting big-check"
+                         data-key="{{h.key}}"
+                         {{#if (eq (lookup ../system.hauntings h.key) true)}}checked{{/if}}>
+                  <strong>{{h.name}}</strong>
+                </label>
+                <div class="hint">{{h.text}}</div>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="tab" data-group="primary" data-tab="notes">
+      {{editor system.biography target="system.biography" button=true editable=editable engine="prosemirror"}}
+    </div>
+  </section>
+</form>
+
+item-sheet.html:
+<form class="flexcol sheet item" autocomplete="off">
+  <header class="sheet-header"><div class="header-fields"><h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Item Name"/></h1></div></header>
+  <section class="sheet-body">{{editor system.description target="system.description" button=true editable=editable engine="prosemirror"}}</section>
+</form>
+
+
+bookworm.html:
+<!-- templates/archetypes/bookworm.html -->
+<h2>The Bookworm</h2>
+<p class="tagline">Knows Things</p>
+
+<figure class="playbook-art">
+  <img src="{{system.archetypeImage}}" onerror="this.src='{{arch.imageHint}}'">
+</figure>
+
+<div class="vibe">
+  <label>Vibe</label>
+  <input type="text" name="system.vibe" value="{{system.vibe}}"
+         placeholder="nervous, confident, easy-going, quirky, boisterous, colourful, chatty, always online"
+  <small>Suggestions: {{arch.vibeSuggestions}}</small>
+</div>
+
+sheet-attributes.html:
+<div>Attributes block placeholder.</div>
+
+sheet-groups.html:
+<div>Groups block placeholder.</div>
+
+template.json:
+{
+  "Actor": {
+    "types": ["character", "npc"],
+    "templates": {
+      "base": {
+        "archetype": "scientist",
+        "pronouns": "",
+        "stats": {
+          "science": 0,
+          "wits": 0,
+          "vigour": 0,
+          "intuition": 0
+        },
+        "vibe": "",
+        "backpack": "",
+        "conditions": "",
+        "moves": {
+          "selected": []
+        },
+        "hauntings": {
+          "marked": []
+        },
+        "biography": "",
+        "archetypeImage": ""
+      }
+    },
+    "character": { "templates": ["base"] },
+    "npc":       { "templates": ["base"] }
+  },
+
+  "Item": {
+    "types": ["gear", "ability", "misc"],
+    "templates": {
+      "base": {
+        "description": ""
+      }
+    },
+    "gear":    { "templates": ["base"] },
+    "ability": { "templates": ["base"] },
+    "misc":    { "templates": ["base"] }
+  }
+}
+
+
+nb: each archetype file is a variation of the same with the name of the others archetypes/
+
+
