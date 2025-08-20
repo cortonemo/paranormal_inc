@@ -13,8 +13,8 @@ export class PINActorSheet extends ActorSheet {
       template: "systems/paranormal_inc/templates/actor-sheet.html",
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "playbook" }],
       resizable: true,
-      width:  base.width  ?? 720,
-      height: Math.round((base.height ?? 720) * 1.05) // +5% taller
+      width:  720,
+      height: 800
     });
   }
 
